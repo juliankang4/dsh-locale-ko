@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Korean translation of dsh's experimental features (Agent Teams, voice input).
+- Korean for 5 other plugins, applied when they are installed.
 
 ## 0.1.0
 
