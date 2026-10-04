@@ -16,6 +16,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import { createContext, runInContext } from 'node:vm'
 
 const SOURCE_FILE = /^packages\/[^/]+\/[^/]+\/src\/.*\.tsx?$/
+const EXPERIMENTAL_PREFIX = '@deepseek-ai/dsh-experimental-'
 
 // Some locale modules re-export dsh packages for other surfaces; those
 // specifiers cannot resolve in this checkout, so drop them before loading.
@@ -57,6 +58,35 @@ function* walk(dir) {
     if (entry.isDirectory()) yield* walk(path)
     else if (SOURCE_FILE.test(relative(cacheDir, path))) yield path
   }
+}
+
+/**
+ * Directories of the experimental packages this release installs: the CLI's
+ * own runtime dependencies (others are published but not shipped) plus the
+ * experimental packages those depend on.
+ */
+function shippedExperimentalDirs() {
+  const root = join(cacheDir, 'packages', 'experimental')
+  if (!existsSync(root)) return new Set()
+  const manifest = JSON.parse(execFileSync('git', ['-C', checkout, 'show', `${tag}:apps/cli/package.json`], { encoding: 'utf8' }))
+  const byName = new Map()
+  for (const entry of readdirSync(root, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue
+    const dir = join(root, entry.name)
+    const pkg = JSON.parse(readFileSync(join(dir, 'package.json'), 'utf8'))
+    byName.set(pkg.name, { dir, dependencies: Object.keys(pkg.dependencies ?? {}) })
+  }
+  const shipped = new Set()
+  const pending = Object.keys(manifest.dependencies ?? {}).filter(name => name.startsWith(EXPERIMENTAL_PREFIX))
+  while (pending.length > 0) {
+    const name = pending.pop()
+    const pkg = byName.get(name)
+    if (pkg === undefined || shipped.has(name)) continue
+    shipped.add(name)
+    pending.push(...pkg.dependencies.filter(dependency => dependency.startsWith(EXPERIMENTAL_PREFIX)))
+  }
+  console.log(`experimental packages: ${[...shipped].sort().join(', ')}`)
+  return new Set([...shipped].map(name => relative(cacheDir, byName.get(name).dir)))
 }
 
 /** Split `text` on `sep` separators that sit outside brackets and strings. */
@@ -258,10 +288,11 @@ async function extractCall(file, call) {
 
 const tables = { en: new Map(), zh: new Map() }
 const unresolved = []
+const experimentalDirs = shippedExperimentalDirs()
 
 for (const path of [...walk(join(cacheDir, 'packages'))].sort()) {
   const rel = relative(cacheDir, path)
-  if (rel.startsWith('packages/experimental/')) continue
+  if (rel.startsWith('packages/experimental/') && !experimentalDirs.has(rel.split('/').slice(0, 3).join('/'))) continue
   const file = { path, rel, src: readFileSync(path, 'utf8') }
   file.imports = parseImports(file.src)
   for (const call of findCalls(file.src)) {
