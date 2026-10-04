@@ -2735,6 +2735,12 @@ const dictionaries = {
   }
 }
 
+// Korean dictionaries for third-party plugin namespaces, keyed by the namespace
+// the plugin registers. The English source of each capture is in
+// source/plugins/*.json (scripts/capture-plugins.mjs). A namespace no installed
+// plugin uses is never read, so registering it is harmless.
+const pluginDictionaries = {}
+
 window.__ModuleLoader__.load({
   id: 'dsh-locale-ko',
   factory: () => ({
@@ -2744,6 +2750,26 @@ window.__ModuleLoader__.load({
       for (const [ns, dict] of Object.entries(dictionaries)) {
         ctx.effect(() => ctx.locale.register(ns, 'ko', dict), `dsh-locale-ko: ${ns}`)
       }
+      // A third-party plugin may ship its own Korean, and dsh rejects a second
+      // registration for the same namespace and locale. Wait until the owner
+      // has registered (a probe key resolves), then add ours, swallowing the
+      // collision its own Korean causes, so the owner's translations win.
+      const common = ctx.locale.bind('common')
+      let pending = Object.entries(pluginDictionaries).map(([ns, dict]) => ({
+        ns, dict, translate: ctx.locale.bind(ns),
+        probes: Object.keys(dict).filter(key => common(key) === key).slice(0, 3),
+      }))
+      const attach = () => {
+        const ready = pending.filter(entry => entry.probes.some(key => entry.translate(key) !== key))
+        pending = pending.filter(entry => !ready.includes(entry))
+        for (const entry of ready) {
+          ctx.effect(() => {
+            try { return ctx.locale.register(entry.ns, 'ko', entry.dict) } catch { return () => {} }
+          }, `dsh-locale-ko: ${entry.ns}`)
+        }
+      }
+      ctx.effect(() => ctx.locale.subscribe(() => queueMicrotask(attach)), 'dsh-locale-ko: plugin namespaces')
+      attach()
     },
   }),
 })
