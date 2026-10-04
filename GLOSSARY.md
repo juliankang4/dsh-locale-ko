@@ -67,3 +67,8 @@ Terms used across the dsh Web UI and the Korean rendering this pack uses. Pick t
 | overridden | 변경됨 | A setting that differs from its default. |
 | base URL, endpoint | 기본 URL, 엔드포인트 | |
 | credential | 자격 증명 | |
+| component (of a plugin) | 구성 요소 | |
+| bundle, profile | 번들, 프로필 | |
+| Auto review | 자동 검토 | Permission mode with model review before each call. |
+| native (tool call) | 네이티브 | Kept apart from 기본 제공 (built-in). |
+| shortcut, modifier key | 단축키, 보조 키 | |
