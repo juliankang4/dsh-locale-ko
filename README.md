@@ -22,7 +22,7 @@ npx @deepseek-ai/dsh plugin --profile web add dsh-locale-ko
 
 1. 왼쪽 사이드바에서 **플러그인**(Plugins)을 엽니다.
 2. **플러그인 추가**(Add plugin)를 누릅니다.
-3. **플러그인 추가**(Add plugin) 창의 입력 칸(흐린 글씨로 `for example dsh-plugin-whale-pet`이 보이는 칸)에 `dsh-locale-ko`를 입력하고 **설치**(Install)를 누릅니다.
+3. **플러그인 추가**(Add plugin) 창의 입력 칸(흐린 글씨로 `for example dsh-plugin-whale-pet`이 보이는 칸)에 패키지 이름 `dsh-locale-ko`만 입력하고 **설치**(Install)를 누릅니다. `dsh plugin ...`으로 시작하는 명령 전체를 붙여 넣으면 "not a package name" 오류가 납니다.
 4. 화면에서 설치한 플러그인은 꺼진 상태로 설치됩니다. 설치가 끝나면 **지금 사용**(Enable now)을 눌러 켭니다. 다시 시작하라는 안내가 나오면 앱을 다시 시작합니다.
 
 명령줄로 설치할 수도 있습니다. 이때는 앱에 들어 있는 `dsh` 명령을 씁니다.
