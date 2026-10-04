@@ -49,9 +49,16 @@ dsh에 들어 있는 실험 기능(에이전트 팀, 음성 입력)과 아래 �
 
 - dshmarket (1.66.8)
 - @michengai/dsh-archive-manager (1.0.11)
+- @michengai/dsh-skills-manager (1.1.9)
+- @nanmicoder/dsh-agent-teams (0.1.22)
 - @xmanrui/dsh-im (4.35.1)
 - dsh-codex-subscription (2.5.2)
+- dsh-mnemon (0.5.24)
+- dsh-pet (0.3.5)
 - dsh-plugin-model-proxy (0.1.6)
+- dsh-univer-office (0.3.6)
+
+플러그인을 업데이트하거나 껐다 켠 뒤 화면 일부가 영어로 나오거나 동작하지 않으면 페이지를 새로 고쳐 주세요.
 
 ## 번역되지 않는 부분
 
