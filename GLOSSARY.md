@@ -47,7 +47,8 @@ Terms used across the dsh Web UI and the Korean rendering this pack uses. Pick t
 | queue, steer | 대기열, 즉시 전달 | Sending while the agent runs: queue the message for the next turn, or deliver it into the current run. |
 | branch (a conversation) | 분기 | |
 | attachment | 첨부 파일 | |
-| preview | 미리보기 | |
+| preview | 미리보기 | Previews of documents, files and pages. |
+| Preview (release stage) | 프리뷰 | dsh 0.2 being a preview release; keeps it apart from 미리보기. |
 | sidebar | 사이드바 | |
 | terminal, shell | 터미널, 셸 | |
 | registry, package | 레지스트리, 패키지 | |
@@ -60,3 +61,9 @@ Terms used across the dsh Web UI and the Korean rendering this pack uses. Pick t
 | inspect | 검사 | |
 | skill | 스킬 | |
 | feedback | 피드백 | |
+| built-in, custom | 기본 제공, 사용자 지정 | |
+| Standard / Minimal / PTC / Creator mode | 표준 모드, 최소 모드, PTC 모드, 크리에이터 모드 | Built-in agent preset names. |
+| Full access, Read Only, Workspace Write | 전체 접근, 읽기 전용, 워크스페이스 쓰기 | Permission presets. |
+| overridden | 변경됨 | A setting that differs from its default. |
+| base URL, endpoint | 기본 URL, 엔드포인트 | |
+| credential | 자격 증명 | |
