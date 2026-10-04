@@ -45,7 +45,7 @@ Terms used across the dsh Web UI and the Korean rendering this pack uses. Pick t
 | to-do list | 할 일 목록 | |
 | reminder, schedule | 알림, 예약 | Scheduled automation tasks are 자동화 작업. |
 | queue, steer | 대기열, 즉시 전달 | Sending while the agent runs: queue the message for the next turn, or deliver it into the current run. |
-| branch (a conversation) | 분기 | |
+| branch, fork (a session) | 분기 | Both start a new session from a completed turn. |
 | attachment | 첨부 파일 | |
 | preview | 미리보기 | Previews of documents, files and pages. |
 | Preview (release stage) | 프리뷰 | dsh 0.2 being a preview release; keeps it apart from 미리보기. |
@@ -72,3 +72,6 @@ Terms used across the dsh Web UI and the Korean rendering this pack uses. Pick t
 | Auto review | 자동 검토 | Permission mode with model review before each call. |
 | native (tool call) | 네이티브 | Kept apart from 기본 제공 (built-in). |
 | shortcut, modifier key | 단축키, 보조 키 | |
+| archive, pin | 보관, 고정 | |
+| pane, split | 분할 창, 나누기 | Right sidebar layout; 창 alone means a window. |
+| render (a preview) | 렌더링 | Loading text such as "문서 렌더링 중...". |
