@@ -9,6 +9,7 @@ Terms used across the dsh Web UI and the Korean rendering this pack uses. Pick t
 - Progress labels end in "중" ("파일 읽는 중"); finished-step labels end in "함" or "음" ("파일 읽음", "명령 실행함").
 - Follow the English punctuation: a final period only where English has one, and keep "…".
 - Keep `{placeholder}` tokens exactly. Never attach a particle directly to a placeholder; attach it to a fixed word instead ("{name} 파일을 열 수 없습니다", "‘{name}’ 항목을 삭제할까요?"). Counters follow the number: "{count}개", "{seconds}초".
+- Slash command tokens (`command.token.*`) stay in English: dsh resolves typed commands only by their English or Chinese spelling.
 - Keep untranslated: DeepSeek, DeepSeek Harness, dsh, DSH, Cordis, MCP, ACP, PTC, SSH, LSP, API, JSON, YAML, command and tool names, file names, code identifiers, keyboard keys and model names.
 - Avoid translationese: no "~하는 것이 가능합니다", no "당신", no needless passives or "~에 대해".
 
@@ -74,4 +75,8 @@ Terms used across the dsh Web UI and the Korean rendering this pack uses. Pick t
 | shortcut, modifier key | 단축키, 보조 키 | |
 | archive, pin | 보관, 고정 | |
 | pane, split | 분할 창, 나누기 | Right sidebar layout; 창 alone means a window. |
+| delivery record | 전달 기록 | What an automation task sent to its session. |
+| deliverables, present files | 결과물, 파일 전달 | Files the agent hands back at the end of a turn. |
+| one-shot, continuable (subagent) | 일회성, 이어서 진행 가능 | |
+| time zone | 시간대 | |
 | render (a preview) | 렌더링 | Loading text such as "문서 렌더링 중...". |
