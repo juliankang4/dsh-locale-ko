@@ -1,4 +1,6 @@
 /** Korean dictionaries per namespace: { "<namespace>": { "<key>": "<Korean text>" } }. */
+{
+// The block keeps these constants local when dsh runs this file again after a disable and enable.
 const dictionaries = {
   "approval": {
     "allowOnce": "이번만 허용",
@@ -2615,3 +2617,4 @@ window.__ModuleLoader__.load({
     },
   }),
 })
+}
