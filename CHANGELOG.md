@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add `npm run check` for formatting, lint and language checks.
+
 ## 0.1.1
 
 - Fix a crash when enabling the pack again without a reload.
