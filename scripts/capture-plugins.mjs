@@ -54,7 +54,7 @@ function fileName(name) {
 
 /** A callable stand-in for anything a bundle touches that this script does not model. */
 function stub() {
-  const target = function () {}
+  function target() {}
   return new Proxy(target, {
     get(object, property) {
       if (property === 'then') return undefined
@@ -78,11 +78,14 @@ function stub() {
  * of the bundle's bundler keeps resolving through its prototype chain.
  */
 function moduleNamespace() {
-  const proto = new Proxy({}, { get: (_target, property) => property === '__esModule' ? true : stub() })
-  return new Proxy({}, {
-    get: (_target, property) => property === '__esModule' ? true : stub(),
-    getPrototypeOf: () => proto,
-  })
+  const proto = new Proxy({}, { get: (_target, property) => (property === '__esModule' ? true : stub()) })
+  return new Proxy(
+    {},
+    {
+      get: (_target, property) => (property === '__esModule' ? true : stub()),
+      getPrototypeOf: () => proto,
+    },
+  )
 }
 
 /** Run one client bundle under the stub and return its `locale.register` calls. */
@@ -90,96 +93,241 @@ async function captureRegistrations(code, filename) {
   const registrations = []
   const errors = []
   const element = () => ({
-    dataset: {}, style: {}, classList: { add() {}, remove() {}, toggle() {}, contains: () => false }, textContent: '',
-    innerHTML: '', children: [], childNodes: [], firstChild: null, lastChild: null, parentNode: null,
-    parentElement: null, previousSibling: null, nextSibling: null, ownerDocument: null, shadowRoot: null,
-    setAttribute() {}, removeAttribute() {}, getAttribute: () => null, hasAttribute: () => false,
-    appendChild: value => value, insertBefore: value => value, replaceChild: value => value, removeChild: value => value,
-    append() {}, prepend() {}, remove() {}, replaceChildren() {}, cloneNode: () => element(),
-    addEventListener() {}, removeEventListener() {}, dispatchEvent: () => true,
-    querySelector: () => null, querySelectorAll: () => [], closest: () => null, matches: () => false,
-    contains: () => false, getRootNode: () => null, attachShadow: () => element(),
-    focus() {}, blur() {}, click() {}, scrollIntoView() {}, scrollTo() {}, setPointerCapture() {},
-    releasePointerCapture() {}, getBoundingClientRect: () => ({}), getClientRects: () => [],
+    dataset: {},
+    style: {},
+    classList: { add() {}, remove() {}, toggle() {}, contains: () => false },
+    textContent: '',
+    innerHTML: '',
+    children: [],
+    childNodes: [],
+    firstChild: null,
+    lastChild: null,
+    parentNode: null,
+    parentElement: null,
+    previousSibling: null,
+    nextSibling: null,
+    ownerDocument: null,
+    shadowRoot: null,
+    setAttribute() {},
+    removeAttribute() {},
+    getAttribute: () => null,
+    hasAttribute: () => false,
+    appendChild: (value) => value,
+    insertBefore: (value) => value,
+    replaceChild: (value) => value,
+    removeChild: (value) => value,
+    append() {},
+    prepend() {},
+    remove() {},
+    replaceChildren() {},
+    cloneNode: () => element(),
+    addEventListener() {},
+    removeEventListener() {},
+    dispatchEvent: () => true,
+    querySelector: () => null,
+    querySelectorAll: () => [],
+    closest: () => null,
+    matches: () => false,
+    contains: () => false,
+    getRootNode: () => null,
+    attachShadow: () => element(),
+    focus() {},
+    blur() {},
+    click() {},
+    scrollIntoView() {},
+    scrollTo() {},
+    setPointerCapture() {},
+    releasePointerCapture() {},
+    getBoundingClientRect: () => ({}),
+    getClientRects: () => [],
     animate: () => ({ finished: Promise.resolve(), cancel() {}, play() {}, pause() {} }),
-    getElementsByClassName: () => [], getElementsByTagName: () => [],
+    getElementsByClassName: () => [],
+    getElementsByTagName: () => [],
   })
   const locale = {
     register: (ns, localeOrDicts, dict) => {
       registrations.push(dict === undefined ? [ns, localeOrDicts] : [ns, localeOrDicts, dict])
       return () => {}
     },
-    bind: () => key => key,
+    bind: () => (key) => key,
     addLanguage: () => () => {},
-    resolveText: text => typeof text === 'string' ? text : text.en,
+    resolveText: (text) => (typeof text === 'string' ? text : text.en),
   }
-  const ctx = new Proxy({}, {
-    get(_target, property) {
-      if (property === 'locale') return locale
-      if (property === 'effect') return (callback) => {
-        try {
-          const result = callback()
-          return typeof result === 'function' ? result : () => {}
-        } catch (error) {
-          errors.push(String(error))
-          return () => {}
-        }
-      }
-      if (property === 'inject') return (_dependencies, callback) => {
-        try {
-          const result = callback(ctx)
-          return typeof result === 'function' ? result : () => {}
-        } catch (error) {
-          errors.push(String(error))
-          return () => {}
-        }
-      }
-      if (property === 'on') return () => () => {}
-      if (property === 'fiber') return { uid: 1 }
-      if (property === 'get') return () => stub()
-      return stub()
+  const ctx = new Proxy(
+    {},
+    {
+      get(_target, property) {
+        if (property === 'locale') return locale
+        if (property === 'effect')
+          return (callback) => {
+            try {
+              const result = callback()
+              return typeof result === 'function' ? result : () => {}
+            } catch (error) {
+              errors.push(String(error))
+              return () => {}
+            }
+          }
+        if (property === 'inject')
+          return (_dependencies, callback) => {
+            try {
+              const result = callback(ctx)
+              return typeof result === 'function' ? result : () => {}
+            } catch (error) {
+              errors.push(String(error))
+              return () => {}
+            }
+          }
+        if (property === 'on') return () => () => {}
+        if (property === 'fiber') return { uid: 1 }
+        if (property === 'get') return () => stub()
+        return stub()
+      },
     },
-  })
+  )
   const document = {
-    createElement: element, createTextNode: element, createComment: element, createDocumentFragment: element,
-    head: element(), body: element(), documentElement: element(), readyState: 'complete', hidden: false,
-    visibilityState: 'visible', title: '', cookie: '', activeElement: null, fonts: { ready: Promise.resolve() },
-    querySelector: () => element(), querySelectorAll: () => [], getElementById: () => element(),
-    getElementsByClassName: () => [], getElementsByTagName: () => [], elementFromPoint: () => null,
-    elementsFromPoint: () => [], hasFocus: () => true,
-    addEventListener() {}, removeEventListener() {}, dispatchEvent: () => true,
+    createElement: element,
+    createTextNode: element,
+    createComment: element,
+    createDocumentFragment: element,
+    head: element(),
+    body: element(),
+    documentElement: element(),
+    readyState: 'complete',
+    hidden: false,
+    visibilityState: 'visible',
+    title: '',
+    cookie: '',
+    activeElement: null,
+    fonts: { ready: Promise.resolve() },
+    querySelector: () => element(),
+    querySelectorAll: () => [],
+    getElementById: () => element(),
+    getElementsByClassName: () => [],
+    getElementsByTagName: () => [],
+    elementFromPoint: () => null,
+    elementsFromPoint: () => [],
+    hasFocus: () => true,
+    addEventListener() {},
+    removeEventListener() {},
+    dispatchEvent: () => true,
   }
   const navigator = {
-    language: 'en', languages: ['en'], userAgent: 'node', platform: 'node', onLine: true, maxTouchPoints: 0,
-    clipboard: stub(), getGamepads: () => [], sendBeacon: () => true,
+    language: 'en',
+    languages: ['en'],
+    userAgent: 'node',
+    platform: 'node',
+    onLine: true,
+    maxTouchPoints: 0,
+    clipboard: stub(),
+    getGamepads: () => [],
+    sendBeacon: () => true,
   }
   const globals = {}
-  for (const name of ['AbortController', 'AbortSignal', 'EventTarget', 'Event', 'CustomEvent', 'ErrorEvent',
-    'MessageEvent', 'MessageChannel', 'TextEncoder', 'TextDecoder', 'URL', 'URLSearchParams', 'Blob', 'File',
-    'FormData', 'Headers', 'Request', 'Response', 'WebSocket', 'performance', 'crypto', 'structuredClone',
-    'atob', 'btoa']) {
+  for (const name of [
+    'AbortController',
+    'AbortSignal',
+    'EventTarget',
+    'Event',
+    'CustomEvent',
+    'ErrorEvent',
+    'MessageEvent',
+    'MessageChannel',
+    'TextEncoder',
+    'TextDecoder',
+    'URL',
+    'URLSearchParams',
+    'Blob',
+    'File',
+    'FormData',
+    'Headers',
+    'Request',
+    'Response',
+    'WebSocket',
+    'performance',
+    'crypto',
+    'structuredClone',
+    'atob',
+    'btoa',
+  ]) {
     if (globalThis[name] !== undefined) globals[name] = globalThis[name]
   }
   let registration
-  const window = { __ModuleLoader__: { load: value => { registration = value } }, document, navigator }
+  const window = {
+    __ModuleLoader__: {
+      load: (value) => {
+        registration = value
+      },
+    },
+    document,
+    navigator,
+  }
   const windowProxy = new Proxy(window, {
-    get: (target, property) => property in target ? target[property] : property in context ? context[property] : stub(),
+    get: (target, property) =>
+      property in target ? target[property] : property in context ? context[property] : stub(),
   })
   const context = createContext({
-    window: windowProxy, document, navigator, console: { log() {}, warn() {}, info() {}, debug() {}, error() {} },
-    fetch: () => new Promise(() => {}), setTimeout, clearTimeout, queueMicrotask, setImmediate,
-    setInterval: () => 0, clearInterval() {}, requestAnimationFrame: () => 0, cancelAnimationFrame() {},
-    getComputedStyle: () => ({}), matchMedia: () => ({ matches: false, addEventListener() {}, addListener() {} }),
-    localStorage: {}, sessionStorage: {}, location: { href: 'http://127.0.0.1/' },
+    window: windowProxy,
+    document,
+    navigator,
+    console: { log() {}, warn() {}, info() {}, debug() {}, error() {} },
+    fetch: () => new Promise(() => {}),
+    setTimeout,
+    clearTimeout,
+    queueMicrotask,
+    setImmediate,
+    setInterval: () => 0,
+    clearInterval() {},
+    requestAnimationFrame: () => 0,
+    cancelAnimationFrame() {},
+    getComputedStyle: () => ({}),
+    matchMedia: () => ({ matches: false, addEventListener() {}, addListener() {} }),
+    localStorage: {},
+    sessionStorage: {},
+    location: { href: 'http://127.0.0.1/' },
     history: { pushState() {}, replaceState() {} },
-    MutationObserver: class { observe() {} disconnect() {} takeRecords() { return [] } },
-    ResizeObserver: class { observe() {} unobserve() {} disconnect() {} },
-    IntersectionObserver: class { observe() {} unobserve() {} disconnect() {} },
+    MutationObserver: class {
+      observe() {}
+      disconnect() {}
+      takeRecords() {
+        return []
+      }
+    },
+    ResizeObserver: class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    },
+    IntersectionObserver: class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    },
     customElements: { define() {}, get: () => undefined },
-    Image: class { addEventListener() {} }, Audio: class { play() { return Promise.resolve() } pause() {} },
-    DOMParser: class { parseFromString() { return document } },
-    XMLHttpRequest: class { open() {} send() {} setRequestHeader() {} addEventListener() {} },
-    HTMLElement: class {}, HTMLDivElement: class {}, Element: class {}, Node: class {},
+    Image: class {
+      addEventListener() {}
+    },
+    Audio: class {
+      play() {
+        return Promise.resolve()
+      }
+      pause() {}
+    },
+    DOMParser: class {
+      parseFromString() {
+        return document
+      }
+    },
+    XMLHttpRequest: class {
+      open() {}
+      send() {}
+      setRequestHeader() {}
+      addEventListener() {}
+    },
+    HTMLElement: class {},
+    HTMLDivElement: class {},
+    Element: class {},
+    Node: class {},
     ...globals,
   })
   context.self = windowProxy
@@ -214,7 +362,11 @@ function fetchPackage(name, version) {
   const bundleDir = join(dir, 'package')
   if (!existsSync(join(bundleDir, 'package.json'))) {
     mkdirSync(dir, { recursive: true })
-    const packed = JSON.parse(execFileSync('npm', ['pack', `${name}@${version}`, '--json', '--pack-destination', cacheDir], { encoding: 'utf8' }))
+    const packed = JSON.parse(
+      execFileSync('npm', ['pack', `${name}@${version}`, '--json', '--pack-destination', cacheDir], {
+        encoding: 'utf8',
+      }),
+    )
     const tarball = (Array.isArray(packed) ? packed[0] : Object.values(packed)[0]).filename
     execFileSync('tar', ['-xzf', join(cacheDir, tarball), '-C', dir])
   }
@@ -275,25 +427,37 @@ async function capturePackages(entries) {
 
       const sorted = {}
       for (const [ns, locales] of [...namespaces].sort(([a], [b]) => compare(a, b))) {
-        if (capturedNamespaces.has(ns)) throw new Error(`namespace ${ns} is already registered by ${capturedNamespaces.get(ns)}`)
-        const korean = [...locales.keys()].filter(locale => /^ko(-|$)/i.test(locale))
+        if (capturedNamespaces.has(ns))
+          throw new Error(`namespace ${ns} is already registered by ${capturedNamespaces.get(ns)}`)
+        const korean = [...locales.keys()].filter((locale) => /^ko(-|$)/i.test(locale))
         if (korean.length > 0) shippedKorean.push(`${name}@${version}: ${ns} (${korean.join(', ')})`)
-        sorted[ns] = Object.fromEntries([...locales].sort(([a], [b]) => compare(a, b)).map(([locale, dict]) => [
-          locale, Object.fromEntries([...Object.entries(dict)].sort(([a], [b]) => compare(a, b))),
-        ]))
+        sorted[ns] = Object.fromEntries(
+          [...locales]
+            .sort(([a], [b]) => compare(a, b))
+            .map(([locale, dict]) => [
+              locale,
+              Object.fromEntries([...Object.entries(dict)].sort(([a], [b]) => compare(a, b))),
+            ]),
+        )
       }
       for (const ns of Object.keys(sorted)) capturedNamespaces.set(ns, `${name}@${version}`)
 
       const file = fileName(name)
-      writeFileSync(join(sourceDir, file), `${JSON.stringify({ package: name, version, namespaces: sorted }, null, 2)}\n`)
-      const keys = Object.values(sorted).map(dict => Object.keys(dict.en).length).join(' + ')
+      writeFileSync(
+        join(sourceDir, file),
+        `${JSON.stringify({ package: name, version, namespaces: sorted }, null, 2)}\n`,
+      )
+      const keys = Object.values(sorted)
+        .map((dict) => Object.keys(dict.en).length)
+        .join(' + ')
       console.log(`source/plugins/${file}: ${Object.keys(sorted).join(', ')} (${keys} en keys)`)
     } catch (error) {
       failures.push(`${name}@${version}`)
       console.error(`${name}@${version}: capture failed: ${error instanceof Error ? error.message : error}`)
     }
   }
-  if (failures.length > 0) console.error(`${failures.length} of ${entries.length} packages failed: ${failures.join(', ')}`)
+  if (failures.length > 0)
+    console.error(`${failures.length} of ${entries.length} packages failed: ${failures.join(', ')}`)
   if (shippedKorean.length > 0) {
     console.error('these namespaces already ship Korean and must not be translated:')
     for (const namespace of shippedKorean) console.error(`  ${namespace}`)
@@ -321,30 +485,39 @@ async function captureAll(specs) {
 
   let captureFailed = false
   if (entries.length > 0) {
-    const status = spawnSync(process.execPath, [
-      '--permission',
-      `--allow-fs-read=${cacheDir}`,
-      `--allow-fs-read=${fileURLToPath(import.meta.url)}`,
-      `--allow-fs-write=${sourceDir}`,
-      fileURLToPath(import.meta.url),
-      '--capture',
-      JSON.stringify(entries),
-    ], { stdio: 'inherit' })
+    const status = spawnSync(
+      process.execPath,
+      [
+        '--permission',
+        `--allow-fs-read=${cacheDir}`,
+        `--allow-fs-read=${fileURLToPath(import.meta.url)}`,
+        `--allow-fs-write=${sourceDir}`,
+        fileURLToPath(import.meta.url),
+        '--capture',
+        JSON.stringify(entries),
+      ],
+      { stdio: 'inherit' },
+    )
     captureFailed = status.status !== 0
     if (status.error !== undefined) console.error(`capture child failed: ${status.error.message}`)
   }
 
-  const selectedNames = new Set(selected.map(spec => splitSpec(spec)[0]))
+  const selectedNames = new Set(selected.map((spec) => splitSpec(spec)[0]))
   const stale = readdirSync(sourceDir)
-    .filter(file => file.endsWith('.json'))
-    .map(file => JSON.parse(readFileSync(join(sourceDir, file), 'utf8')))
-    .filter(data => !selectedNames.has(data.package))
+    .filter((file) => file.endsWith('.json'))
+    .map((file) => JSON.parse(readFileSync(join(sourceDir, file), 'utf8')))
+    .filter((data) => !selectedNames.has(data.package))
   if (stale.length > 0) {
-    const list = stale.map(data => `source/plugins/${fileName(data.package)} (${data.package}@${data.version})`).join(', ')
+    const list = stale
+      .map((data) => `source/plugins/${fileName(data.package)} (${data.package}@${data.version})`)
+      .join(', ')
     console.error(`not in this run: ${list}; move them to the Trash if no longer wanted`)
   }
 
-  if (downloadFailures.length > 0) console.error(`${downloadFailures.length} of ${selected.length} packages failed to download: ${downloadFailures.join(', ')}`)
+  if (downloadFailures.length > 0)
+    console.error(
+      `${downloadFailures.length} of ${selected.length} packages failed to download: ${downloadFailures.join(', ')}`,
+    )
   if (downloadFailures.length > 0 || captureFailed) process.exitCode = 1
 }
 

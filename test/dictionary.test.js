@@ -13,14 +13,20 @@ for (const file of readdirSync(new URL('../source/plugins', import.meta.url))) {
   for (const [namespace, locales] of Object.entries(captured.namespaces)) {
     assert.ok(!pluginEnglish.has(namespace), `namespace ${namespace} is captured in more than one file`)
     assert.ok(!Object.hasOwn(english, namespace), `namespace ${namespace} is both a core and a third-party namespace`)
-    const korean = Object.keys(locales).filter(locale => /^ko(-|$)/i.test(locale))
+    const korean = Object.keys(locales).filter((locale) => /^ko(-|$)/i.test(locale))
     assert.deepEqual(korean, [], `namespace ${namespace} already ships Korean as ${korean.join(', ')}`)
     pluginEnglish.set(namespace, locales.en)
   }
 }
 
 let registration
-globalThis.window = { __ModuleLoader__: { load: value => { registration = value } } }
+globalThis.window = {
+  __ModuleLoader__: {
+    load: (value) => {
+      registration = value
+    },
+  },
+}
 await import('../client.js')
 
 /**
@@ -32,11 +38,11 @@ function applyClient(owners = new Map()) {
   const registered = []
   let subscribed = () => {}
   registration.factory().apply({
-    effect: callback => callback(),
+    effect: (callback) => callback(),
     locale: {
       addLanguage: () => () => {},
-      bind: namespace => key => owners.get(namespace)?.en?.[key] ?? key,
-      subscribe: callback => {
+      bind: (namespace) => (key) => owners.get(namespace)?.en?.[key] ?? key,
+      subscribe: (callback) => {
         subscribed = callback
         return () => {}
       },
@@ -53,14 +59,16 @@ function applyClient(owners = new Map()) {
 }
 
 /** Every captured namespace as an installed plugin that registers English and Chinese. */
-const installed = new Map([...pluginEnglish].map(([namespace, en]) => [namespace, { en, locales: new Set(['en', 'zh']) }]))
+const installed = new Map(
+  [...pluginEnglish].map(([namespace, en]) => [namespace, { en, locales: new Set(['en', 'zh']) }]),
+)
 const { registered: dictionaries } = applyClient(installed)
 
 /** Namespaces the client translates today; empty before the first translation commit. */
-const translated = [...pluginEnglish.keys()].filter(namespace => dictionaries.some(([name]) => name === namespace))
+const translated = [...pluginEnglish.keys()].filter((namespace) => dictionaries.some(([name]) => name === namespace))
 const untranslated = translated.length === 0 && 'no third-party dictionary is translated yet'
 
-const placeholders = text => [...text.matchAll(/\{[^{}]+\}/g)].map(match => match[0]).sort()
+const placeholders = (text) => [...text.matchAll(/\{[^{}]+\}/g)].map((match) => match[0]).sort()
 
 const check = (namespace, dict, source) => {
   let translated = 0
@@ -74,7 +82,7 @@ const check = (namespace, dict, source) => {
   return translated
 }
 
-test('Korean values agree with the English source', t => {
+test('Korean values agree with the English source', (t) => {
   let translated = 0
   for (const [namespace, locale, dict] of dictionaries) {
     assert.equal(locale, 'ko')
@@ -87,7 +95,7 @@ test('Korean values agree with the English source', t => {
   t.diagnostic(`translated ${translated}/${total} keys across ${dictionaries.length} namespaces`)
 })
 
-test('Korean values agree with the captured third-party dictionaries', t => {
+test('Korean values agree with the captured third-party dictionaries', (t) => {
   let translated = 0
   for (const [namespace, locale, dict] of dictionaries) {
     assert.equal(locale, 'ko')
@@ -100,54 +108,100 @@ test('Korean values agree with the captured third-party dictionaries', t => {
   }
 
   const total = [...pluginEnglish.values()].reduce((count, dict) => count + Object.keys(dict).length, 0)
-  const missing = [...pluginEnglish.keys()].filter(namespace => !dictionaries.some(([name]) => name === namespace))
-  t.diagnostic(`translated ${translated}/${total} third-party keys; ${missing.length} of ${pluginEnglish.size} captured namespaces have no Korean dictionary`)
+  const missing = [...pluginEnglish.keys()].filter((namespace) => !dictionaries.some(([name]) => name === namespace))
+  t.diagnostic(
+    `translated ${translated}/${total} third-party keys; ${missing.length} of ${pluginEnglish.size} captured namespaces have no Korean dictionary`,
+  )
 })
 
 test('third-party dictionaries attach only after their owner registers', { skip: untranslated }, async () => {
   for (const namespace of translated) {
     const owners = new Map()
     const { registered, notify } = applyClient(owners)
-    assert.deepEqual(registered.filter(([name]) => name === namespace), [], `nothing attaches before any owner registers (${namespace})`)
+    assert.deepEqual(
+      registered.filter(([name]) => name === namespace),
+      [],
+      `nothing attaches before any owner registers (${namespace})`,
+    )
     owners.set(namespace, { en: pluginEnglish.get(namespace), locales: new Set(['en', 'zh']) })
     notify()
-    await new Promise(resolve => setImmediate(resolve))
-    assert.deepEqual(registered.filter(([name]) => name === namespace).map(([name, locale]) => [name, locale]), [[namespace, 'ko']])
+    await new Promise((resolve) => setImmediate(resolve))
+    assert.deepEqual(
+      registered.filter(([name]) => name === namespace).map(([name, locale]) => [name, locale]),
+      [[namespace, 'ko']],
+    )
   }
 
-  const owners = new Map(translated.map(namespace => [namespace, { en: pluginEnglish.get(namespace), locales: new Set(['en', 'zh']) }]))
+  const owners = new Map(
+    translated.map((namespace) => [namespace, { en: pluginEnglish.get(namespace), locales: new Set(['en', 'zh']) }]),
+  )
   const { registered, notify } = applyClient(owners)
   notify()
-  await new Promise(resolve => setImmediate(resolve))
-  const attached = registered.map(([name]) => name).filter(name => pluginEnglish.has(name))
-  assert.deepEqual(attached.sort(), [...translated].sort(), 'every translated namespace attaches when its owner registers')
+  await new Promise((resolve) => setImmediate(resolve))
+  const attached = registered.map(([name]) => name).filter((name) => pluginEnglish.has(name))
+  assert.deepEqual(
+    attached.sort(),
+    [...translated].sort(),
+    'every translated namespace attaches when its owner registers',
+  )
 })
 
 test('an owner that ships Korean keeps its own', { skip: untranslated }, () => {
   for (const namespace of translated) {
     const owners = new Map([[namespace, { en: pluginEnglish.get(namespace), locales: new Set(['en', 'zh', 'ko']) }]])
     const { registered } = applyClient(owners)
-    assert.deepEqual(registered.filter(([name]) => name === namespace), [], `${namespace} keeps its own Korean`)
+    assert.deepEqual(
+      registered.filter(([name]) => name === namespace),
+      [],
+      `${namespace} keeps its own Korean`,
+    )
   }
 
-  const owners = new Map(translated.map(namespace => [namespace, { en: pluginEnglish.get(namespace), locales: new Set(['en', 'zh', 'ko']) }]))
+  const owners = new Map(
+    translated.map((namespace) => [
+      namespace,
+      { en: pluginEnglish.get(namespace), locales: new Set(['en', 'zh', 'ko']) },
+    ]),
+  )
   const { registered } = applyClient(owners)
-  assert.deepEqual(registered.filter(([name]) => pluginEnglish.has(name)), [], 'no translated namespace is registered when every owner ships Korean')
+  assert.deepEqual(
+    registered.filter(([name]) => pluginEnglish.has(name)),
+    [],
+    'no translated namespace is registered when every owner ships Korean',
+  )
 })
 
 /** Every line of the literal is a namespace, a key or a closing brace, in order. */
 function assertSorted(name) {
   const lines = client.split('\n')
-  const start = lines.indexOf(`const ${name} = {`)
-  assert.ok(start !== -1 || lines.includes(`const ${name} = {}`), `${name} literal not found`)
-  const body = start === -1 ? [] : lines.slice(start + 1, lines.indexOf('}', start))
+  const start = lines.findIndex((line) => line.trim() === `const ${name} = {`)
+  assert.ok(start !== -1 || lines.some((line) => line.trim() === `const ${name} = {}`), `${name} literal not found`)
+  const indent = start === -1 ? '' : lines[start].match(/^\s*/)[0]
+  const end = lines.indexOf(`${indent}}`, start)
+  assert.ok(start === -1 || end > start, `${name} literal is not closed`)
+  const body = start === -1 ? [] : lines.slice(start + 1, end).map((line) => line.slice(indent.length))
   let previousNamespace
   let previousKey
-  for (const line of body) {
-    assert.match(line, /^ {2}"(?:[^"\\]|\\.)+": \{$|^ {4}"(?:[^"\\]|\\.)+": "(?:[^"\\]|\\.)*",?$|^ {2}\},?$/, `unexpected line in ${name}: ${line}`)
+  const normalized = body
+    .join('\n')
+    .replace(/"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/g, (literal) =>
+      literal.startsWith('"')
+        ? literal
+        : `"${literal.slice(1, -1).replace(/\\.|"/g, (escaped) => (escaped === "\\'" ? "'" : escaped === '"' ? '\\"' : escaped))}"`,
+    )
+    .replace(/:\n\s*"/g, ': "')
+  for (const line of normalized === '' ? [] : normalized.split('\n')) {
+    assert.match(
+      line,
+      /^ {2}"(?:[^"\\]|\\.)+": \{$|^ {4}"(?:[^"\\]|\\.)+": "(?:[^"\\]|\\.)*",?$|^ {2}\},?$/,
+      `unexpected line in ${name}: ${line}`,
+    )
     const namespace = /^ {2}"([^"]+)": \{$/.exec(line)
     if (namespace !== null) {
-      assert.ok(previousNamespace === undefined || previousNamespace < namespace[1], `namespace ${namespace[1]} is out of order`)
+      assert.ok(
+        previousNamespace === undefined || previousNamespace < namespace[1],
+        `namespace ${namespace[1]} is out of order`,
+      )
       previousNamespace = namespace[1]
       previousKey = undefined
       continue

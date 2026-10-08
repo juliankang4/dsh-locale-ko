@@ -5,23 +5,43 @@
   "type": "module",
   "license": "MIT",
   "repository": "github:juliankang4/dsh-locale-ko",
-  "keywords": ["dsh-plugin", "dsh", "deepseek-harness", "locale", "i18n", "korean"],
+  "keywords": [
+    "dsh-plugin",
+    "dsh",
+    "deepseek-harness",
+    "locale",
+    "i18n",
+    "korean"
+  ],
   "exports": {
     ".": "./index.js",
     "./client": "./client.js",
     "./package.json": "./package.json"
   },
-  "files": ["index.js", "client.js", "cordis.patch.yml", "THIRD_PARTY_NOTICES.md"],
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "THIRD_PARTY_NOTICES.md"
+  ],
   "dsh": {
-    "bundle": { "patch": "./cordis.patch.yml" },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
     "client": {
       "platform": "web",
       "immediately": true,
-      "inject": ["@deepseek-ai/dsh-client-locale"]
+      "inject": [
+        "@deepseek-ai/dsh-client-locale"
+      ]
     }
   },
   "scripts": {
+    "check": "biome check --error-on-warnings . && node scripts/check.mjs",
     "test": "node --test",
     "prepublishOnly": "npm test"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.1"
   }
 }

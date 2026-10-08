@@ -71,6 +71,12 @@ dsh에 들어 있는 실험 기능(에이전트 팀, 음성 입력)과 아래 �
 
 어색하거나 틀린 번역을 발견하면 [GitHub 이슈](https://github.com/juliankang4/dsh-locale-ko/issues)에 알려 주세요. 화면 위치와 원래 영어 문구를 함께 적어 주시면 고치기 쉽습니다. 용어는 [GLOSSARY.md](GLOSSARY.md)를 기준으로 맞춥니다.
 
+## 개발
+
+Node.js 24를 사용합니다. `npm ci`로 개발 도구를 설치한 뒤 `npm run check`로 포맷, lint와 JavaScript 구문을 검사합니다. `npm test`는 번역 사전과 플레이스홀더를 확인합니다.
+
+타입 오류를 예외 처리할 때는 `@ts-expect-error: <이유>`만 허용합니다. lint 예외는 `biome-ignore lint/<그룹>/<규칙>: <이유>`처럼 한 규칙에 한정해야 합니다. 파일 전체나 규칙 그룹을 끄는 주석은 거부합니다. 번역 사전의 `${...}`는 원문 토큰이므로 일반 문자열 안에 그대로 둡니다. `source/`의 추출 결과와 npm이 생성한 lockfile은 포맷 검사에서 제외합니다.
+
 ## 라이선스
 
 MIT. 번역한 다른 플러그인은 MIT 또는 Apache-2.0 라이선스입니다.

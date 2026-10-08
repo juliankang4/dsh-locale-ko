@@ -23,8 +23,10 @@ const EXPERIMENTAL_PREFIX = '@deepseek-ai/dsh-experimental-'
 registerHooks({
   load(url, context, nextLoad) {
     if (!url.startsWith('file:') || !url.endsWith('.ts')) return nextLoad(url, context)
-    const source = readFileSync(new URL(url), 'utf8')
-      .replace(/^[ \t]*(?:import|export)\b[^\n]*\bfrom\s*['"](?!\.)[^'"]*['"][^\n]*$|^[ \t]*import\s*['"](?!\.)[^'"]*['"][^\n]*$/gm, '')
+    const source = readFileSync(new URL(url), 'utf8').replace(
+      /^[ \t]*(?:import|export)\b[^\n]*\bfrom\s*['"](?!\.)[^'"]*['"][^\n]*$|^[ \t]*import\s*['"](?!\.)[^'"]*['"][^\n]*$/gm,
+      '',
+    )
     return { format: 'module-typescript', source, shortCircuit: true }
   },
 })
@@ -68,7 +70,9 @@ function* walk(dir) {
 function shippedExperimentalDirs() {
   const root = join(cacheDir, 'packages', 'experimental')
   if (!existsSync(root)) return new Set()
-  const manifest = JSON.parse(execFileSync('git', ['-C', checkout, 'show', `${tag}:apps/cli/package.json`], { encoding: 'utf8' }))
+  const manifest = JSON.parse(
+    execFileSync('git', ['-C', checkout, 'show', `${tag}:apps/cli/package.json`], { encoding: 'utf8' }),
+  )
   const byName = new Map()
   for (const entry of readdirSync(root, { withFileTypes: true })) {
     if (!entry.isDirectory()) continue
@@ -77,16 +81,16 @@ function shippedExperimentalDirs() {
     byName.set(pkg.name, { dir, dependencies: Object.keys(pkg.dependencies ?? {}) })
   }
   const shipped = new Set()
-  const pending = Object.keys(manifest.dependencies ?? {}).filter(name => name.startsWith(EXPERIMENTAL_PREFIX))
+  const pending = Object.keys(manifest.dependencies ?? {}).filter((name) => name.startsWith(EXPERIMENTAL_PREFIX))
   while (pending.length > 0) {
     const name = pending.pop()
     const pkg = byName.get(name)
     if (pkg === undefined || shipped.has(name)) continue
     shipped.add(name)
-    pending.push(...pkg.dependencies.filter(dependency => dependency.startsWith(EXPERIMENTAL_PREFIX)))
+    pending.push(...pkg.dependencies.filter((dependency) => dependency.startsWith(EXPERIMENTAL_PREFIX)))
   }
   console.log(`experimental packages: ${[...shipped].sort().join(', ')}`)
-  return new Set([...shipped].map(name => relative(cacheDir, byName.get(name).dir)))
+  return new Set([...shipped].map((name) => relative(cacheDir, byName.get(name).dir)))
 }
 
 /** Split `text` on `sep` separators that sit outside brackets and strings. */
@@ -109,7 +113,7 @@ function splitTopLevel(text, sep) {
     }
   }
   parts.push(text.slice(start).trim())
-  return parts.filter(part => part !== '')
+  return parts.filter((part) => part !== '')
 }
 
 /** Read one expression starting at `start`, returning its text and end index. */
@@ -179,7 +183,8 @@ function parseImports(src) {
 function declarationOf(file, name) {
   const pattern = new RegExp(`(?:^|[\\s;{}(,])(?:export\\s+)?(?:const|let|var)\\s+${name}\\s*(?::[^=\\n]+)?=`, 'gm')
   const matches = [...file.src.matchAll(pattern)]
-  if (matches.length + (file.imports.has(name) ? 1 : 0) > 1) throw new Error(`${file.rel}: ${name} is bound more than once`)
+  if (matches.length + (file.imports.has(name) ? 1 : 0) > 1)
+    throw new Error(`${file.rel}: ${name} is bound more than once`)
   return matches[0]
 }
 
@@ -216,9 +221,8 @@ async function evaluate(file, expr) {
 /** Resolve `register(ns, locale, dict)` when locale and dict come from a for-of loop. */
 async function resolveLoopDictionaries(file, call, localeName, dictName) {
   const header = /for\s*\(\s*const\s*\[\s*([A-Za-z_$][\w$]*)\s*,\s*([A-Za-z_$][\w$]*)\s*\]\s*of\s*/g
-  let match
   let last
-  while ((match = header.exec(file.src)) !== null) {
+  for (const match of file.src.matchAll(header)) {
     if (match.index > call.index) break
     if (match[1] === localeName && match[2] === dictName) last = match
   }
@@ -228,7 +232,14 @@ async function resolveLoopDictionaries(file, call, localeName, dictName) {
   if (!Array.isArray(tuples)) return undefined
   const entries = []
   for (const tuple of tuples) {
-    if (!Array.isArray(tuple) || tuple.length !== 2 || typeof tuple[0] !== 'string' || typeof tuple[1] !== 'object' || tuple[1] === null) return undefined
+    if (
+      !Array.isArray(tuple) ||
+      tuple.length !== 2 ||
+      typeof tuple[0] !== 'string' ||
+      typeof tuple[1] !== 'object' ||
+      tuple[1] === null
+    )
+      return undefined
     entries.push([tuple[0], tuple[1]])
   }
   return entries
@@ -251,7 +262,10 @@ function findCalls(src) {
       }
       if (char === "'" || char === '"' || char === '`') quote = char
       else if (char === '(') depth++
-      else if (char === ')' && --depth === 0) { close = i; break }
+      else if (char === ')' && --depth === 0) {
+        close = i
+        break
+      }
     }
     if (close < 0) continue
     calls.push({
@@ -305,10 +319,13 @@ for (const path of [...walk(join(cacheDir, 'packages'))].sort()) {
       if (tables[locale] === undefined) continue
       const namespace = tables[locale].get(result.namespace) ?? new Map()
       for (const [key, value] of Object.entries(dict)) {
-        if (typeof value !== 'string') throw new Error(`${rel}:${call.line}: ${result.namespace}.${key} is not a string`)
+        if (typeof value !== 'string')
+          throw new Error(`${rel}:${call.line}: ${result.namespace}.${key} is not a string`)
         const existing = namespace.get(key)
         if (existing !== undefined && existing !== value) {
-          throw new Error(`${rel}:${call.line}: conflicting values for ${result.namespace}.${key}: ${JSON.stringify(existing)} vs ${JSON.stringify(value)}`)
+          throw new Error(
+            `${rel}:${call.line}: conflicting values for ${result.namespace}.${key}: ${JSON.stringify(existing)} vs ${JSON.stringify(value)}`,
+          )
         }
         namespace.set(key, value)
       }
@@ -325,11 +342,12 @@ if (unresolved.length > 0) {
 
 /** Sort namespaces and keys so translation diffs stay readable. */
 const compare = (a, b) => (a < b ? -1 : a > b ? 1 : 0)
-const sorted = table => Object.fromEntries(
-  [...table].sort(([a], [b]) => compare(a, b)).map(([namespace, keys]) => [
-    namespace, Object.fromEntries([...keys].sort(([a], [b]) => compare(a, b))),
-  ]),
-)
+const sorted = (table) =>
+  Object.fromEntries(
+    [...table]
+      .sort(([a], [b]) => compare(a, b))
+      .map(([namespace, keys]) => [namespace, Object.fromEntries([...keys].sort(([a], [b]) => compare(a, b)))]),
+  )
 
 mkdirSync(sourceDir, { recursive: true })
 for (const [locale, table] of Object.entries(tables)) {
