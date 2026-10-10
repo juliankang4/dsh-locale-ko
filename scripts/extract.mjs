@@ -3,10 +3,13 @@
  * Extract the zh and en dictionaries dsh ships into source/en.json and
  * source/zh.json, for translation reference. English is the source of truth.
  *
- *   node scripts/extract.mjs <dsh-checkout> <git-tag>
+ *   node scripts/extract.mjs <dsh-checkout> <git-tag> [<newer-git-tag>...]
  *
- * The checkout is a read-only dsh git clone; the tag must exist there. Sources
- * are unpacked once under .cache/<tag> (never deleted by this script).
+ * The checkout is a read-only dsh git clone; every tag must exist there. Sources
+ * are unpacked once under .cache/<tag> (never deleted by this script). Several
+ * tags union into one table: a later tag wins where it has the key, and a
+ * namespace or key only an earlier tag has stays, so translations survive on a
+ * release that still shows them.
  */
 import { execFileSync, spawnSync } from 'node:child_process'
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, renameSync, writeFileSync } from 'node:fs'
@@ -31,17 +34,18 @@ registerHooks({
   },
 })
 
-const [checkoutArg, tag] = process.argv.slice(2)
-if (checkoutArg === undefined || tag === undefined) {
-  console.error('usage: node scripts/extract.mjs <dsh-checkout> <git-tag>')
+const [checkoutArg, ...tags] = process.argv.slice(2)
+if (checkoutArg === undefined || tags.length === 0) {
+  console.error('usage: node scripts/extract.mjs <dsh-checkout> <git-tag> [<newer-git-tag>...]')
   process.exit(2)
 }
 const checkout = resolve(checkoutArg)
 const cacheRoot = fileURLToPath(new URL('../.cache', import.meta.url))
-const cacheDir = join(cacheRoot, tag)
 const sourceDir = fileURLToPath(new URL('../source', import.meta.url))
 
-if (!existsSync(join(cacheDir, 'packages'))) {
+function unpack(tag) {
+  const cacheDir = join(cacheRoot, tag)
+  if (existsSync(join(cacheDir, 'packages'))) return cacheDir
   const archive = execFileSync('git', ['-C', checkout, 'archive', tag, 'packages'], { maxBuffer: 1 << 30 })
   mkdirSync(cacheRoot, { recursive: true })
   const staging = mkdtempSync(join(cacheRoot, 'staging-'))
@@ -51,13 +55,13 @@ if (!existsSync(join(cacheDir, 'packages'))) {
     process.exit(2)
   }
   renameSync(staging, cacheDir)
+  return cacheDir
 }
 
-/** Every source file under the cache that can register dictionaries. */
-function* walk(dir) {
+function* walk(cacheDir, dir) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const path = join(dir, entry.name)
-    if (entry.isDirectory()) yield* walk(path)
+    if (entry.isDirectory()) yield* walk(cacheDir, path)
     else if (SOURCE_FILE.test(relative(cacheDir, path))) yield path
   }
 }
@@ -67,7 +71,7 @@ function* walk(dir) {
  * own runtime dependencies (others are published but not shipped) plus the
  * experimental packages those depend on.
  */
-function shippedExperimentalDirs() {
+function shippedExperimentalDirs(cacheDir, tag) {
   const root = join(cacheDir, 'packages', 'experimental')
   if (!existsSync(root)) return new Set()
   const manifest = JSON.parse(
@@ -300,44 +304,65 @@ async function extractCall(file, call) {
   return undefined
 }
 
-const tables = { en: new Map(), zh: new Map() }
-const unresolved = []
-const experimentalDirs = shippedExperimentalDirs()
+async function extractTag(tag) {
+  const cacheDir = unpack(tag)
+  const tables = { en: new Map(), zh: new Map() }
+  const unresolved = []
+  const experimentalDirs = shippedExperimentalDirs(cacheDir, tag)
 
-for (const path of [...walk(join(cacheDir, 'packages'))].sort()) {
-  const rel = relative(cacheDir, path)
-  if (rel.startsWith('packages/experimental/') && !experimentalDirs.has(rel.split('/').slice(0, 3).join('/'))) continue
-  const file = { path, rel, src: readFileSync(path, 'utf8') }
-  file.imports = parseImports(file.src)
-  for (const call of findCalls(file.src)) {
-    const result = await extractCall(file, call)
-    if (result === undefined) {
-      unresolved.push(`${rel}:${call.line}`)
+  for (const path of [...walk(cacheDir, join(cacheDir, 'packages'))].sort()) {
+    const rel = relative(cacheDir, path)
+    if (rel.startsWith('packages/experimental/') && !experimentalDirs.has(rel.split('/').slice(0, 3).join('/')))
       continue
-    }
-    for (const [locale, dict] of result.entries) {
-      if (tables[locale] === undefined) continue
-      const namespace = tables[locale].get(result.namespace) ?? new Map()
-      for (const [key, value] of Object.entries(dict)) {
-        if (typeof value !== 'string')
-          throw new Error(`${rel}:${call.line}: ${result.namespace}.${key} is not a string`)
-        const existing = namespace.get(key)
-        if (existing !== undefined && existing !== value) {
-          throw new Error(
-            `${rel}:${call.line}: conflicting values for ${result.namespace}.${key}: ${JSON.stringify(existing)} vs ${JSON.stringify(value)}`,
-          )
-        }
-        namespace.set(key, value)
+    const file = { path, rel, src: readFileSync(path, 'utf8') }
+    file.imports = parseImports(file.src)
+    for (const call of findCalls(file.src)) {
+      const result = await extractCall(file, call)
+      if (result === undefined) {
+        unresolved.push(`${rel}:${call.line}`)
+        continue
       }
-      tables[locale].set(result.namespace, namespace)
+      for (const [locale, dict] of result.entries) {
+        if (tables[locale] === undefined) continue
+        const namespace = tables[locale].get(result.namespace) ?? new Map()
+        for (const [key, value] of Object.entries(dict)) {
+          if (typeof value !== 'string')
+            throw new Error(`${rel}:${call.line}: ${result.namespace}.${key} is not a string`)
+          const existing = namespace.get(key)
+          if (existing !== undefined && existing !== value) {
+            throw new Error(
+              `${rel}:${call.line}: conflicting values for ${result.namespace}.${key}: ${JSON.stringify(existing)} vs ${JSON.stringify(value)}`,
+            )
+          }
+          namespace.set(key, value)
+        }
+        tables[locale].set(result.namespace, namespace)
+      }
     }
   }
+
+  if (unresolved.length > 0) {
+    console.error(`${tag}: unresolved register calls (${unresolved.length}):`)
+    for (const site of unresolved) console.error(`  ${site}`)
+    process.exit(1)
+  }
+  for (const [locale, table] of Object.entries(tables)) {
+    const keys = Object.values(Object.fromEntries(table)).reduce((total, dict) => total + dict.size, 0)
+    console.log(`${tag} ${locale}: ${table.size} namespaces, ${keys} keys`)
+  }
+  return tables
 }
 
-if (unresolved.length > 0) {
-  console.error(`unresolved register calls (${unresolved.length}):`)
-  for (const site of unresolved) console.error(`  ${site}`)
-  process.exit(1)
+const merged = { en: new Map(), zh: new Map() }
+for (const tag of tags) {
+  const tables = await extractTag(tag)
+  for (const [locale, table] of Object.entries(tables)) {
+    for (const [namespace, keys] of table) {
+      const target = merged[locale].get(namespace) ?? new Map()
+      for (const [key, value] of keys) target.set(key, value)
+      merged[locale].set(namespace, target)
+    }
+  }
 }
 
 /** Sort namespaces and keys so translation diffs stay readable. */
@@ -350,9 +375,9 @@ const sorted = (table) =>
   )
 
 mkdirSync(sourceDir, { recursive: true })
-for (const [locale, table] of Object.entries(tables)) {
+for (const [locale, table] of Object.entries(merged)) {
   const data = sorted(table)
   const keys = Object.values(data).reduce((total, dict) => total + Object.keys(dict).length, 0)
   writeFileSync(join(sourceDir, `${locale}.json`), `${JSON.stringify(data, null, 2)}\n`)
-  console.log(`source/${locale}.json: ${Object.keys(data).length} namespaces, ${keys} keys`)
+  console.log(`source/${locale}.json: ${Object.keys(data).length} namespaces, ${keys} keys (${tags.join(' + ')})`)
 }

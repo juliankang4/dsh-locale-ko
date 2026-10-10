@@ -80,3 +80,17 @@ Terms used across the dsh Web UI and the Korean rendering this pack uses. Pick t
 | one-shot, continuable (subagent) | 일회성, 이어서 진행 가능 | |
 | time zone | 시간대 | |
 | render (a preview) | 렌더링 | Loading text such as "문서 렌더링 중...". |
+| experimental feature | 실험 기능 | Plugin badges and categories; the bare badge "Experimental" is 실험. |
+| migration | 마이그레이션 | Moving a session to a newer format; "Migration required" is 마이그레이션 필요. |
+| raw data, raw log | 원시 데이터, 원시 로그 | The unformatted session records a log view shows. |
+| record (in a session log) | 레코드 | One row of the session log table; "no records" is 기록 없음. |
+| font, font size | 글꼴, 글자 크기 | 글꼴 names a family list, 글자 크기 a px size (코드 글꼴, 본문 글꼴, 터미널 글꼴). |
+| source (of a plugin) | 소스 | Code source is 코드 소스; "built in" is 기본 제공. |
+| update (action) | 업데이트 | Plugin state labels: 업데이트 있음 (available), 설치 안 됨 (not installed). |
+| suggestion (in a filter) | 제안 | Keyword completion in the session log filter. |
+| inspector (panel) | 검사기 | NodeJS 검사기; not 인스펙터. |
+| command line, command arguments | 명령줄, 명령 인수 | |
+| translation service | 번역 서비스 | The external provider translation features send text to. |
+| target language | 대상 언어 | The language a translation produces. |
+| input device | 입력 장치 | Microphone pickers; 시스템 기본값 is the system default. |
+| external task (subagent) | 외부 작업 | A subagent that runs outside this session. |

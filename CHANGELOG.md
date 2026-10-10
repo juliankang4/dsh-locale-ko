@@ -4,6 +4,9 @@
 
 - Add `npm run check` for formatting, lint and language checks.
 - Run checks and tests in CI with one summary check.
+- Korean for the 160 new and 4 changed strings in dsh 0.2.1-alpha.2, including the experimental reasoning translation, session log and NodeJS Inspector.
+- Strings that only dsh 0.2.0-rc.2 shows keep their Korean, so one pack covers both versions.
+- `scripts/extract.mjs` accepts several dsh tags and merges their strings.
 
 ## 0.1.1
 
