@@ -2,7 +2,7 @@
 
 DeepSeek Harness(dsh)의 웹 화면과 데스크톱 앱을 한국어로 바꾸는 언어팩(language pack) 플러그인입니다. 설치하면 설정의 언어 목록에 '한국어'가 추가됩니다. 메뉴와 버튼, 안내 문구, 오류 메시지가 한국어로 표시됩니다.
 
-dsh 0.2.0-rc.2에서 확인했습니다.
+웹 화면은 dsh 0.2.1-alpha.2, 데스크톱 앱은 dsh 0.2.0-rc.2에서 확인했습니다.
 
 ## 설치
 
@@ -48,11 +48,18 @@ npx @deepseek-ai/dsh plugin --profile web add dsh-locale-ko
 dsh에 들어 있는 실험 기능(에이전트 팀, 음성 입력, 추론 번역, 세션 로그, NodeJS 검사기)과 아래 플러그인의 화면도 한국어로 나옵니다. 해당 플러그인을 설치했을 때만 적용되며, 따로 설정할 것은 없습니다. 나중에 플러그인이 자체 한국어를 제공하면 언어팩 번역 대신 플러그인의 한국어가 나옵니다. 괄호 안은 번역한 버전입니다.
 
 - dshmarket (1.66.8)
+- @linxin666/dsh-client-ui-git-graph (0.4.5)
+- @linxin666/dsh-client-ui-skill-explorer (0.4.5)
+- @linxin666/dsh-client-ui-task-board (0.4.5)
+- @linxin666/dsh-remote-web-ui (0.4.5)
+- @linxin666/dsh-ssh (0.4.5)
 - @michengai/dsh-archive-manager (1.0.11)
+- @michengai/dsh-codex-ui (1.1.33): 이 플러그인은 dsh 0.2.0-rc.2에서 쓸 수 있고 0.2.1-alpha.2는 지원하지 않습니다.
 - @michengai/dsh-skills-manager (1.1.9)
 - @nanmicoder/dsh-agent-teams (0.1.22)
 - @xmanrui/dsh-im (4.35.1)
 - dsh-codex-subscription (2.5.2)
+- dsh-context (0.66.1)
 - dsh-mnemon (0.5.24)
 - dsh-pet (0.3.5)
 - dsh-plugin-model-proxy (0.1.6)
@@ -63,7 +70,7 @@ dsh에 들어 있는 실험 기능(에이전트 팀, 음성 입력, 추론 번�
 ## 번역되지 않는 부분
 
 - dsh 새 버전에서 추가된 문구는 번역하기 전까지 영어로 나옵니다. 위 플러그인의 새 버전에서 추가된 문구도 언어팩이 업데이트될 때까지 영어로 나옵니다.
-- 위 목록에 없는 플러그인 중에는 화면 문구를 dsh의 언어 기능 없이 코드에 직접 넣은 것이 있습니다. 이런 플러그인(dsh-cost-meter, dsh-mcp-connector, dsh-free-search 등)은 언어팩으로 번역할 수 없습니다.
+- 위 목록에 없는 플러그인 중에는 화면 문구를 dsh의 언어 기능 없이 코드에 직접 넣은 것이 있습니다. 이런 플러그인(dsh-better-sidebar, dsh-cost-meter, dsh-mcp-connector, dsh-free-search 등)은 언어팩으로 번역할 수 없습니다.
 - **플러그인** 화면에 나오는 플러그인 이름과 설명은 공식 플러그인을 포함해 모두 영어로 나옵니다. dsh가 이 내용을 각 플러그인의 파일에서 읽어 오고, 다른 플러그인이 대신 넣을 방법을 제공하지 않기 때문입니다.
 - 데스크톱 앱의 macOS 메뉴 막대, 시작 창, 업데이트 대화 상자는 앱이 영어와 중국어만 지원해서 언어팩으로 바뀌지 않습니다.
 
@@ -89,4 +96,4 @@ PR과 `main` push에서 같은 검사와 테스트 명령을 실행합니다. �
 
 ## 라이선스
 
-MIT. 번역한 다른 플러그인은 MIT 또는 Apache-2.0 라이선스입니다.
+MIT. 번역한 다른 플러그인은 MIT, Apache-2.0, BSD-3-Clause 중 하나를 따릅니다. 패키지별 라이선스와 저작권 표시는 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)에 있습니다.

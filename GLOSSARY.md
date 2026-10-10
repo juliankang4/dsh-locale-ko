@@ -22,6 +22,13 @@ Terms used across the dsh Web UI and the Korean rendering this pack uses. Pick t
 | agent preset | 에이전트 프리셋 | "mode" in preset names is 모드 (표준 모드, PTC 모드). |
 | session | 세션 | |
 | conversation | 대화 | |
+| side chat | 사이드 채팅 | A separate conversation tab that inherits the main session context. |
+| main (agent, conversation, session, computer) | 메인 | 메인 에이전트, 메인 대화, 메인 세션, 메인 컴퓨터. Not 주 or 기본 (기본 means default). "Main menu" stays 주 메뉴; Git "main checkout" stays 기본 체크아웃. |
+| thinking | 생각 | Model thinking labels: 생각, 생각 중…. Reasoning (effort, tokens) stays 추론. |
+| filter (verb) | 필터링 | Placeholders: "경로로 필터링…". The noun filter is 필터. |
+| state labels | ~ 안 됨, ~됨 | 저장 안 됨, 연결 안 됨, 설치 안 됨, 설치됨, 복사됨, 저장됨, 고정됨, 삭제됨. Not 저장하지 않음 or 복사함 for states. |
+| window (loaded/served message range) | 범위 | 불러온 범위 밖. The context window is 컨텍스트 창; its free part is 남은 컨텍스트. |
+| follow-up (session, thread) | 후속 | 후속 세션, 후속 대화 스레드. The action "Ask a follow-up" stays 이어서 묻기. |
 | turn | 턴 | One user request and the agent's work on it. |
 | step | 단계 | |
 | message | 메시지 | |

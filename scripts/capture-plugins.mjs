@@ -42,6 +42,13 @@ const PACKAGES = [
   'dsh-univer-office@0.3.6',
   '@michengai/dsh-skills-manager@1.1.9',
   'dsh-codex-subscription@2.5.2',
+  'dsh-context@0.66.1',
+  '@linxin666/dsh-client-ui-task-board@0.4.5',
+  '@linxin666/dsh-remote-web-ui@0.4.5',
+  '@linxin666/dsh-ssh@0.4.5',
+  '@linxin666/dsh-client-ui-skill-explorer@0.4.5',
+  '@linxin666/dsh-client-ui-git-graph@0.4.5',
+  '@michengai/dsh-codex-ui@1.1.33',
 ]
 
 const cacheDir = fileURLToPath(new URL('../.cache/plugins', import.meta.url))
