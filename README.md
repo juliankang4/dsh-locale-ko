@@ -76,7 +76,7 @@ dsh에 들어 있는 실험 기능(에이전트 팀, 음성 입력, 추론 번�
 
 ## 번역 오류 제보
 
-어색하거나 틀린 번역을 발견하면 [GitHub 이슈](https://github.com/juliankang4/dsh-locale-ko/issues)에 알려 주세요. 화면 위치와 원래 영어 문구를 함께 적어 주시면 고치기 쉽습니다. 용어는 [GLOSSARY.md](GLOSSARY.md)를 기준으로 맞춥니다.
+어색하거나 틀린 번역을 발견하면 [GitHub 이슈](https://github.com/juliankang4/dsh-locale-ko/issues)에 알려 주세요. 화면 위치와 원래 영어 문구를 함께 적어 주시면 고치기 쉽습니다. 용어는 [GLOSSARY.md](https://github.com/juliankang4/dsh-locale-ko/blob/main/GLOSSARY.md)를 기준으로 맞춥니다.
 
 ## 개발
 
