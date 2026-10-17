@@ -93,6 +93,8 @@
         "DeepSeek에 로그인한 뒤 요청을 받는 곳이 계정 인증을 지원하는지 확인해 주세요.",
       "message.failure.accountSignedOut": "DeepSeek에서 로그아웃해 중지되었습니다.",
       "message.failure.auth": "API 키가 올바르지 않습니다",
+      "message.failure.interrupted":
+        "이번 턴이 끝나기 전에 DSH 프로세스가 종료되었습니다(강제 종료, 비정상 종료, 종료 중 시간 초과 등). 그래서 DSH를 다시 시작할 때 이 턴을 닫았습니다. 끝나지 않은 도구 호출은 결과를 알 수 없습니다.",
       "message.failure.quota": "요청 한도를 모두 썼습니다.",
       "message.maxTokens": "출력 토큰 한도에 도달함",
       "message.maxTokens.hint":
@@ -154,6 +156,7 @@
       "message.stopped": "중지됨",
       "message.systemPrompt": "시스템 프롬프트",
       "message.systemPromptUpdate": "시스템 프롬프트 업데이트",
+      "message.taskStopped": "작업 중지됨",
       "message.think": "생각",
       "message.tokensPerSecond": "{tps} tok/s",
       "message.toolAdded": "도구 추가됨: {name}",
@@ -554,6 +557,8 @@
       "read.window": "전체 {total}줄 중 {shown}줄 표시",
       "row.commandArguments": "명령 인수",
       "row.failed": "실패",
+      "row.imageSize": "{width}x{height}px, {bytes}바이트",
+      "row.imageSizeDownscaled": "{width}x{height}px({originalWidth}x{originalHeight}px에서 축소), {bytes}바이트",
       "row.input": "입력",
       "row.inspect": "검사",
       "row.output": "출력",
@@ -615,7 +620,6 @@
       "tool.autoReviewNotExecuted": "도구를 실행하지 않았습니다. 이유: {reason}",
       "tool.autoReviewReasonFallback": "자동 검토에서 이 작업을 허용하지 않았습니다",
       "tool.autoReviewRejected": "자동 검토에서 거부됨",
-      "tool.preparing.content": "{kilobytes}KB",
       "tool.title.bash": "Bash",
       "tool.title.closeTerminal": "터미널 닫기",
       "tool.title.code": "코드",
@@ -768,6 +772,9 @@
       "unavailable": "번역 설정을 사용할 수 없습니다.",
       "unwrap": "줄 바꿈 안 함",
       "wrap": "줄 바꿈",
+    },
+    "deepseek-model-label-1017": {
+      "badge.label": "1017",
     },
     "deliverables": {
       "changes.added": "+{count}",
@@ -1063,7 +1070,6 @@
       "backToList": "플러그인 목록으로",
       "backToPackage": "{name} 화면으로 돌아가기",
       "basicTitle": "기본 제공 플러그인 설정",
-      "bundlesTitle": "설치된 플러그인",
       "cancel": "취소",
       "chooseAddMethod": "플러그인 추가 방법 선택",
       "close": "닫기",
@@ -1114,6 +1120,8 @@
       "installChecking": "확인하는 중…",
       "installClose": "완료",
       "installCloseCancels": "설치 취소 후 닫기",
+      "installConfirmedRefused": "이 플러그인은 설치할 수 없습니다",
+      "installConfirmedTitle": "플러그인 설치",
       "installDescription": "플러그인 패키지 이름, GitHub 저장소 주소 또는 로컬 디렉터리 경로를 입력하세요.",
       "installDetailsHide": "설치 세부 정보 숨기기",
       "installDetailsShow": "설치 세부 정보 보기",
@@ -1121,7 +1129,6 @@
       "installDoneNothing": "새 의존성 없이 설치를 마쳤습니다.",
       "installDoneOtherVersion":
         "pnpm의 공급망 보안 정책(minimumReleaseAge)에 따라 요구 기간보다 최근에 게시된 버전은 자동으로 설치하지 않습니다. 그래서 이번 설치에는 최신 버전 {version} 대신 {installed} 버전을 사용했습니다. 새로 게시된 버전은 이 대기 기간을 마치지 않았고, 아직 발견되지 않은 악성 코드나 결함이 있을 수 있습니다. {version} 버전이 필요하면 현재 버전을 제거한 뒤 {exact} 버전을 설치해 해당 버전을 요청하세요.",
-      "installDoneRestart": "설치했습니다. 다음에 시작할 때 불러옵니다.",
       "installEdit": "편집",
       "installEditAria": "편집으로 돌아가기",
       "installEnableNow": "지금 사용",
@@ -1188,11 +1195,10 @@
       "installUnknownDescription":
         "호스트에 이 요청 ID로 진행 중인 설치가 없습니다. 다시 시도하기 전에 플러그인 목록을 확인하세요.",
       "installUnknownTitle": "설치 결과를 알 수 없음",
-      "installUpgradeNotice":
-        "플러그인 업데이트는 자동으로 설치되지 않습니다. 버전이 다를 때 업데이트를 제공하는 플러그인은 목록에서 업데이트를 선택하고, 그 밖의 플러그인은 제거한 뒤 새 버전을 설치하세요.",
       "installUseGithubMirror": "중국 본토 미러 사용",
       "installVersion": "버전 {version}",
       "installViewTask": "설치 보기",
+      "installedTab": "설치됨",
       "installedTitle": "설치됨",
       "installingTitle": "플러그인 설치 중…",
       "intro": "플러그인 설치, 사용 설정, 구성",
@@ -1214,12 +1220,13 @@
       "partsFilter": "구성 요소 필터",
       "partsFilterEmpty": "일치하는 구성 요소가 없습니다.",
       "partsLabel": "구성 요소",
+      "previewAlt": "{name} 기능 미리보기",
+      "previewUnavailable": "기능 미리보기를 표시하지 못했습니다",
+      "reasonAlreadyInstalled": "이 패키지는 이미 설치되어 있습니다. 다른 버전을 설치하려면 먼저 제거하세요.",
       "reasonAmbiguousInstall": "의존성 변경만으로는 어떤 패키지가 설치되었는지 알 수 없습니다.",
       "reasonBundleInUse": "다른 구성에서 이 번들의 구성 요소를 아직 쓰고 있습니다. 먼저 그쪽을 꺼 주세요.",
       "reasonIncompatibleInstall": "이 DSH와 호환되는 플러그인 버전을 설치하세요.",
       "reasonIncompatibleInstalled": "제거한 뒤 이 DSH와 호환되는 버전을 설치하세요.",
-      "reasonIncompatibleVersion":
-        "{plugin} 플러그인은 DSH {runtime} 버전과 호환되지 않습니다(필요: {peers}). 실행하면 비정상 종료나 데이터 손실이 생길 수 있습니다.",
       "reasonIncompatibleVersionUnnamed":
         "이 플러그인은 실행 중인 DSH 버전과 호환되지 않습니다. 실행하면 비정상 종료나 데이터 손실이 생길 수 있습니다.",
       "reasonInvalidSpec": "올바른 패키지 이름이나 주소를 입력하세요.",
@@ -1245,7 +1252,12 @@
       "registryNpmmirror": "중국 본토 미러",
       "registryOfficial": "공식 npm 레지스트리",
       "registryToggle": "레지스트리",
-      "restartNotice": "변경 사항은 다음에 시작할 때 적용됩니다",
+      "restartReasonHostModule": "이 변경이 DSH 자체가 불러온 모듈까지 적용됩니다.",
+      "restartReasonModuleComparison": "DSH가 불러온 플러그인과 실제 파일을 비교하지 못했습니다.",
+      "restartReasonNoHmr": "이 프로필은 시작할 때만 변경 사항을 적용합니다.",
+      "restartReasonPackageMoved":
+        "설치한 패키지가 다른 디렉터리를 가리키게 되었거나, 이 변경이 DSH 설치본이 제공하는 패키지를 바꿉니다. 다른 위치에서 설치하려면 먼저 패키지를 제거하세요.",
+      "restartReasonUnmanagedPlugin": "플러그인 목록 밖에서 실행 중인 플러그인까지 이 변경이 적용됩니다.",
       "retry": "다시 시도",
       "rowPhaseActive": "실행 중",
       "rowPhaseFailed": "문제 있음",
@@ -1266,6 +1278,7 @@
       "statusNotInstalled": "설치 안 됨",
       "statusProblem": "문제 있음",
       "statusUpdateAvailable": "업데이트 있음",
+      "tabsLabel": "플러그인 보기",
       "terminalCollapse": "접기",
       "terminalCollapseAria": "출력 접기",
       "terminalCommandLine": "명령줄 {n}",
@@ -1287,6 +1300,89 @@
       "update": "업데이트",
       "updateLabel": "{name} 업데이트",
       "versionTag": "v{version}",
+    },
+    "pluginMarket": {
+      "addFirstSource": "인덱스 소스 추가",
+      "addSource": "추가",
+      "allCategories": "전체",
+      "backToList": "찾아보기",
+      "cancel": "취소",
+      "categoriesLabel": "카테고리",
+      "close": "닫기",
+      "confirmTitle": "“{name}” 플러그인을 설치할까요?",
+      "emptyDescription": "플러그인 마켓 인덱스를 추가하면 그 인덱스의 플러그인을 여기서 찾아 설치할 수 있습니다.",
+      "emptyIndex": "이 인덱스에 등록된 플러그인이 없습니다.",
+      "emptyTitle": "아직 플러그인 마켓이 없습니다",
+      "entryMeta": "{version} · {date}",
+      "entryMetaAuthor": "{version} · {author} · {date}",
+      "exempted": "이 버전은 실행 중인 DSH와 호환되지 않지만, 호환 예외를 설정해 두었습니다.",
+      "factAuthor": "작성자",
+      "factCategory": "카테고리",
+      "factCommit": "커밋",
+      "factDirectory": "디렉터리",
+      "factHomepage": "홈페이지",
+      "factLabels": "레이블",
+      "factMarket": "플러그인 마켓",
+      "factPackage": "패키지",
+      "factPublished": "게시일",
+      "factRegistry": "레지스트리",
+      "factRepository": "저장소",
+      "factSource": "출처",
+      "factSourceCode": "소스 코드",
+      "filter": "레이블",
+      "filterCount": "레이블 · {count}",
+      "incompatible": "이 버전은 실행 중인 DSH {runtime} 버전과 호환되지 않습니다. DSH {range} 버전이 필요합니다.",
+      "install": "설치",
+      "installTitle": "{name} 설치",
+      "installTrust":
+        "플러그인은 이 컴퓨터에서 사용자 권한으로 실행됩니다. 이 플러그인의 출처를 신뢰할 수 있는지 확인하세요.",
+      "installVersionTitle": "{name} {version} 설치",
+      "loading": "인덱스 읽는 중",
+      "manageSources": "인덱스 소스 관리…",
+      "marketMenu": "플러그인 마켓 전환, 현재 {market}",
+      "noCompatibleVersion": "DSH {runtime} 버전과 호환되는 버전이 없습니다",
+      "noMatches": "조건에 맞는 플러그인이 없습니다.",
+      "openEntry": "{name} 보기",
+      "openInstalled": "“설치됨” 탭에서 {name} 보기",
+      "readChanged": "읽는 동안 이 인덱스가 바뀌었습니다.",
+      "readFailed": "이 인덱스를 읽지 못했습니다.",
+      "readInvalid": "이 인덱스의 형식이 올바르지 않습니다.",
+      "refresh": "새로 고침",
+      "removeSource": "삭제",
+      "removeSourceNamed": "{url} 삭제",
+      "retry": "다시 시도",
+      "search": "플러그인 검색",
+      "showMore": "더 보기",
+      "sortBy": "정렬: {sort}",
+      "sortDefault": "기본 순서",
+      "sortPublished": "게시일",
+      "sortRelevance": "관련도순",
+      "sourceDuplicate": "이미 추가한 인덱스 소스입니다.",
+      "sourceFailed": "인덱스 소스를 저장하지 못했습니다.",
+      "sourceInvalid": "사용자 이름, 비밀번호, # 조각이 없는 http 또는 https 주소를 쓰세요.",
+      "sourcePlaceholder": "https://example.com/index.json",
+      "sourceUnavailable": "이 환경에서는 인덱스 소스를 저장할 수 없습니다.",
+      "sourceUrl": "인덱스 URL",
+      "sourcesDescription":
+        "플러그인 마켓은 인덱스 파일 하나의 URL로 배포됩니다. “찾아보기”는 여기에 추가한 인덱스를 둘러봅니다.",
+      "sourcesFailed": "인덱스 소스를 읽지 못했습니다.",
+      "sourcesLabel": "추가한 인덱스 소스",
+      "sourcesTitle": "인덱스 소스",
+      "sourcesTrust":
+        "인덱스는 제3자가 제공합니다. 신뢰하는 소스만 추가하세요. 설치한 플러그인은 사용자 권한으로 실행됩니다.",
+      "statusInstalled": "설치됨",
+      "statusProvided": "DSH 기본 제공",
+      "statusUpdate": "업데이트 있음",
+      "switchToAscending": "오름차순 정렬",
+      "switchToDescending": "내림차순 정렬",
+      "title": "찾아보기",
+      "versionDefault": "권장",
+      "versionExempted": "예외 적용",
+      "versionIncompatible": "호환 안 됨",
+      "versionInstalled": "설치됨",
+      "versionPrerelease": "프리릴리스",
+      "versionsLabel": "{name} 버전",
+      "versionsTitle": "버전",
     },
     "question": {
       "action.next": "다음",
@@ -1324,6 +1420,10 @@
     "reference": {
       "candidate.noCwd": "(작업 디렉터리 없음)",
       "crumb.root": "워크스페이스",
+      "fileOpen.close": "닫기",
+      "fileOpen.failed": "“{path}” 파일을 열지 못했습니다. 다시 시도하거나 이 메시지를 닫으세요.",
+      "fileOpen.retry": "다시 시도",
+      "fileOpen.title": "파일을 열 수 없음",
       "section.files": "파일 및 폴더",
       "section.sessions": "세션",
       "section.subagents": "서브에이전트",
@@ -1481,7 +1581,6 @@
       "detail.nextRun": "다음 실행",
       "detail.openSession": "연결된 세션: 원래 세션 열기",
       "detail.openSessionTitle": "연결된 세션 {title}: 원래 세션 열기",
-      "detail.records": "기록",
       "detail.rule": "규칙",
       "detail.session": "연결된 세션",
       "detail.sessionArchived": "원래 세션은 보관되었습니다.",
@@ -1605,6 +1704,10 @@
       "unit.second.one": "초",
       "unit.second.other": "초",
     },
+    "secretMask": {
+      "secret.hide": "비밀 값 가리기",
+      "secret.reveal": "비밀 값 표시",
+    },
     "session-inspector": {
       "filter.apply": "필터 적용",
       "filter.cancel": "취소",
@@ -1705,6 +1808,14 @@
       "developerTools.title": "코딩 보기 표시",
       "general.currentVersion": "현재 버전: {version}",
       "general.nav": "일반",
+      "hostRelease.description":
+        "서비스 버전이 바뀌었습니다. 이 페이지는 실시간 업데이트를 멈췄습니다. 새로 고치면 새 버전을 불러옵니다.",
+      "hostRelease.later": "나중에",
+      "hostRelease.page": "페이지",
+      "hostRelease.reload": "새로 고쳐서 새 버전 불러오기",
+      "hostRelease.service": "서비스",
+      "hostRelease.title": "서비스 버전이 바뀌었습니다",
+      "hostRelease.unknown": "알 수 없음",
       "openDocument": "설정 파일 열기",
       "openDocument.error": "설정 파일을 열 수 없습니다",
       "shortcut.open": "설정 열기",
@@ -1850,8 +1961,6 @@
         "### UI 추가하기\n\n> 사이드바에 프로젝트 노트 항목을 추가하는 DSH 플러그인을 만들어 주세요. 이 워크스페이스의 Markdown 파일을 둘러보고 고른 노트를 미리 볼 수 있게 해 주세요. 설치하고 페이지가 열리는지 확인해 주세요.\n\n예상 결과: 항목과 미리보기 페이지가 동작하는 설치된 플러그인, 그리고 남은 활성화 단계가 있다면 그 안내.\n\n### 도구 추가하기\n\n> 이 프로젝트의 테스트 보고서를 읽고 실패한 테스트를 요약하는 도구가 들어 있는 플러그인을 만들어 주세요. 등록한 다음 샘플 보고서로 확인해 주세요.\n\n예상 결과: 호출할 수 있는 도구가 든 플러그인과 확인을 마친 샘플 호출.\n\n### 나만의 모드 만들기\n\n> 표준 모드를 바탕으로 “코드 리뷰” 모드를 만들어 주세요. 잠재적인 버그와 빠진 테스트를 먼저 살피고 파일 경로와 줄 번호를 밝혀 주세요. 파일을 고치기 전에는 물어보게 해 주세요. 선택할 수 있는 프리셋으로 저장해 주세요.\n\n예상 결과: 새 작업에 쓸 사용자 지정 프리셋. 이 리뷰 지침은 에이전트의 방향을 잡아 줄 뿐입니다. 실제로 실행할 수 있는 동작은 권한 설정이 정합니다.",
       "guideExampleTask": "예시 작업",
       "guideFootnotes": "각주",
-      "guideMinimalExplanation":
-        "### 포함된 것\n\n상태가 유지되는 셸 도구 하나와 고정된 시스템 프롬프트입니다. 이 기본 프리셋은 스킬, 계획, 컨텍스트 압축, 표준 런타임 컨텍스트를 불러오지 않습니다.\n\n### 언제 고를까\n\n실험과 비교의 기준선으로 쓰세요. 셸 명령으로 파일을 읽고 스크립트를 실행할 수는 있지만 긴 작업을 관리하는 기본 기능은 적습니다. 도구가 적다고 해서 처음 쓰는 사람에게 꼭 더 쉬운 것은 아닙니다.",
       "guideMinimalIntro":
         "새 작업에서 최소 모드를 고르세요. 비교할 때는 실행마다 모델, 권한, 입력, 시작 시점의 워크스페이스 상태를 똑같이 맞추세요.",
       "guideMinimalUsage":
@@ -1878,8 +1987,6 @@
       "presetCordisDescription":
         "대화로 DSH를 원하는 대로 바꿉니다. 에이전트가 기능이나 UI를 더하는 플러그인을 작성하게 하거나 도구와 프롬프트를 묶어 나만의 모드를 만들 수 있습니다.",
       "presetCordisName": "크리에이터 모드",
-      "presetMinimalDescription":
-        "에이전트가 터미널 도구 하나로만 작업합니다. 기본 성능을 시험하고 비교할 때 좋습니다.",
       "presetMinimalName": "최소 모드",
       "presetPtcDescription":
         "표준 모드의 기능을 모두 포함합니다. 도구를 일괄로 호출한 뒤 결과를 필터링, 정리, 중복 제거, 집계, 요약하는 작업에 더 잘 맞습니다.",
@@ -1900,6 +2007,7 @@
       "language.title": "언어",
     },
     "settings.models": {
+      "accountSignedIn": "로그인됨",
       "add": "모델 공급자 추가",
       "addCatalog": "서드파티 모델 공급자",
       "addCatalogExhausted": "목록에 있는 공급자를 모두 구성했습니다.",
@@ -1913,8 +2021,11 @@
       "advancedHint": "다른 필드는 cordis.patch.yml에 있습니다. 해당 부분을 직접 편집하세요.",
       "apply": "적용",
       "applying": "적용하는 중…",
+      "authHelp": "인증 정보",
       "baseUrl": "기본 URL",
-      "baseUrlDefault": "공급자 기본값",
+      "baseUrlConfigured": "공급자가 구성한 엔드포인트",
+      "baseUrlEnvironment": "공급자 엔드포인트 구성: {env}",
+      "baseUrlPlaceholder": "{url}",
       "cancel": "취소",
       "close": "닫기",
       "conflict": "이 카드를 연 사이에 다른 곳에서 설정이 바뀌었습니다. 닫았다가 다시 열어 현재 값을 편집하세요.",
@@ -1940,7 +2051,6 @@
       "customTag": "사용자 지정",
       "customized": "변경한 설정",
       "deepSeekAccount": "DeepSeek 계정",
-      "deepSeekBaseUrl": "https://api.deepseek.com/anthropic",
       "deepSeekEndpointHint": "Anthropic Messages와 호환되는 API 엔드포인트를 쓰세요.",
       "deleteConfirm": "{provider} 삭제",
       "deleteDescription":
@@ -1965,11 +2075,21 @@
       "keyBlank": "API 키를 입력하세요. 저장된 키를 그대로 쓰려면 비워 두세요.",
       "keyBlankNew": "API 키를 입력하세요. 이 공급자가 다른 방식으로 인증한다면 비워 두세요.",
       "keyEnvLocked": "실행 환경에서 제공됨(읽기 전용)",
+      "keyFallbackDetected": "환경 변수를 찾았습니다. ({hint})",
+      "keyFallbackDetectedHidden": "환경 변수를 찾았습니다.",
+      "keyFallbackMissing": "환경 변수를 찾지 못했습니다. API 키를 입력하거나 환경 변수 {hint}를 구성하세요.",
+      "keyFallbackUnchecked": "환경 자격 증명 상태를 확인하지 못했습니다.",
+      "keyHelp":
+        "저장한 자격 증명을 먼저 사용합니다. 여기에 표시하는 환경 대체 값 순서는 {env}입니다. 소스는 실행 환경, $cwd/.env, $DSH_HOME/.env 순서입니다.",
+      "keyHide": "비밀 값 가리기",
       "keyIllegalCharacters": "API 키 형식이 올바르지 않습니다. 다시 확인해 주세요.",
       "keyInput": "API 키",
       "keyPlaceholder": "API 키 입력",
+      "keyPlaceholderFallback": "환경 인증을 쓰려면 비워 두세요({hint})",
       "keyPlaceholderNative": "API 키를 입력하거나, 환경 인증을 쓰려면 비워 두세요",
+      "keyPlaceholderSaved": "저장된 자격 증명을 쓰려면 비워 두세요",
       "keyRequired": "계속하려면 API 키를 입력하세요.",
+      "keyReveal": "비밀 값 표시",
       "keyStored": "구성됨, 바꾸려면 새 값 입력",
       "loadFailed": "공급자 목록을 불러오지 못했습니다",
       "maxTokens": "최대 출력 토큰",
@@ -1989,6 +2109,17 @@
       "modelName": "표시 이름",
       "modelNameInvalid": "표시 이름을 비워 둘 수 없습니다.",
       "modelNamePlaceholder": "비워 두면 모델 ID 사용",
+      "modelReasoning": "추론 강도 단계",
+      "modelReasoningAdd": "단계 추가",
+      "modelReasoningHelp": "추론 강도 단계 안내",
+      "modelReasoningHelpText":
+        "API 값은 요청의 추론 강도 필드(예: OpenAI의 reasoning_effort)로 전송됩니다. 기본값은 단계 이름이며, 모델 공급자의 API 문서에 다른 값이 적혀 있으면 그 값을 따릅니다. Off는 추론을 끄고 값이 필요하지 않습니다. 구성에 이미 적힌 값은 그대로 두고 전송합니다.",
+      "modelReasoningLevel": "단계",
+      "modelReasoningNeedsLevel": "Off 외에 단계를 하나 이상 추가하거나 추론 강도 단계를 끄세요.",
+      "modelReasoningOffValuePlaceholder": "추론을 끕니다",
+      "modelReasoningRemove": "단계 삭제",
+      "modelReasoningValue": "API 값",
+      "modelReasoningValueRequired": "Off 외의 단계에는 API 값을 입력해야 하며, 값을 비워 둘 수 없습니다.",
       "models": "모델",
       "modelsCustomized": "변경한 모델 목록",
       "modelsEmpty": "선택 목록에 모델이 표시되지 않습니다. 목록에 없는 ID도 직접 보낼 수는 있습니다.",
@@ -2185,20 +2316,29 @@
       "apiKeyHint": "설정 파일 밖에 저장합니다. 현재 키를 그대로 쓰려면 비워 두세요.",
       "apiKeySet": "키가 구성되어 있습니다.",
       "apiKeyUnset": "구성된 키가 없습니다. DeepSeek 계정 모델을 쓰는 대화만 기본 엔드포인트로 검색할 수 있습니다.",
-      "baseUrl": "엔드포인트",
-      "baseUrlHint": "공급자 기본값을 쓰려면 비워 두세요.",
+      "count": "검색당 결과 수",
+      "countHint":
+        "쿼리마다 돌려받는 결과 수입니다. 1에서 50 사이의 정수이며 기본값은 10입니다. 검색 호출 횟수가 아니라 결과 수를 정합니다. web_search는 자체 결과 한도를 넘는 소스를 보관하지 않습니다.",
       "description": "DeepSeek 검색 공급자를 설정합니다.",
+      "invalidCount": "1에서 50 사이의 정수를 입력하거나, 기본값을 쓰려면 비워 두세요.",
       "invalidNumber": "숫자를 입력하거나, 기본값을 쓰려면 비워 두세요.",
       "maxUses": "요청당 최대 검색 횟수",
-      "maxUsesHint": "한 요청이 답하기 전까지 검색할 수 있는 횟수입니다.",
       "overridden": "변경됨",
       "readOnly": "이 배포 환경에서는 설정이 읽기 전용입니다.",
       "reset": "기본값으로 되돌리기",
       "save": "저장",
       "saveFailed": "배포 환경에서 이 값을 받아들이지 않았습니다. 고칠 수 있도록 입력한 값은 그대로 두었습니다.",
       "saving": "저장하는 중…",
+      "searchApiBaseUrl": "Search / Fetch API 기본 URL",
+      "searchApiBaseUrlHint":
+        "https://api.deepseek.com/v1/tools처럼 API 접두사를 포함해 입력하세요. 여기에 /search 또는 /fetch를 붙입니다. 기본값으로 되돌리려면 비워 두세요.",
+      "searchGuide": "Search & Fetch 안내",
+      "searchGuideUrl": "https://api-docs.deepseek.com/guides/search",
       "title": "웹 검색",
       "unavailable": "이 플러그인을 불러오지 않아 지금은 설정할 수 없습니다.",
+      "useSearchApi": "새 Web Search API 사용",
+      "useSearchApiHint":
+        "기본값은 꺼짐이며 검색은 DeepSeek Messages로 실행됩니다. 새 Web Search API의 기능과 요금은 다음 문서를 보세요: ",
     },
     "shortcuts": {
       "application": "앱",
@@ -2941,6 +3081,7 @@
       "menu.archiveSession": "세션 보관",
       "menu.fork": "세션 분기",
       "menu.pinSession": "세션 고정",
+      "menu.sessionId": "세션 ID 복사",
       "menu.unarchiveSession": "세션 보관 해제",
       "menu.unpinSession": "세션 고정 해제",
       "orderBy.label": "정렬 기준",
@@ -2999,6 +3140,8 @@
       "toast.forkRequiresOpen": "분기를 만들기 전에 원본 세션을 열어 마이그레이션을 완료하세요.",
       "toast.openForkSource": "원본 세션 열기",
       "toast.pinFailed": "고정하지 못했습니다. 잠시 뒤 다시 시도해 주세요.",
+      "toast.sessionIdCopied": "세션 ID를 복사했습니다",
+      "toast.sessionIdCopyFailed": "복사하지 못했습니다. 다시 시도해 주세요.",
       "toast.stoppedAndArchived": "세션을 중지하고 보관했습니다. ",
       "toast.unpinFailed": "고정을 해제하지 못했습니다. 잠시 뒤 다시 시도해 주세요.",
       "viewOptions.hideArchived": "보관된 항목 숨기기",
@@ -3008,7 +3151,88 @@
       "workspace.add": "워크스페이스 추가",
     },
   }
-
+  const variants = {
+    "conversation": {
+      "tool.preparing.content": {
+        "Preparing content {kilobytes}KB": "콘텐츠 준비 중 {kilobytes}KB",
+        "{kilobytes}KB": "{kilobytes}KB",
+      },
+    },
+    "pluginManager": {
+      "bundlesTitle": {
+        "Installed": "설치됨",
+        "Installed plugins": "설치된 플러그인",
+      },
+      "installDoneRestart": {
+        "Installed; it loads at the next start.": "설치했습니다. 다음에 시작할 때 불러옵니다.",
+        "Installed; restart DSH to load it. {reason}": "설치했습니다. DSH를 다시 시작하면 불러옵니다. {reason}",
+      },
+      "installUpgradeNotice": {
+        "Installed plugins do not update automatically yet. To upgrade a plugin, uninstall it and install the new version. Later releases will keep improving the upgrade experience.":
+          "설치된 플러그인은 아직 자동으로 업데이트되지 않습니다. 플러그인을 업그레이드하려면 제거한 뒤 새 버전을 설치하세요. 이후 릴리스에서 업그레이드 환경을 계속 개선할 예정입니다.",
+        "On-demand Official plugins offer Update when their version differs from DSH. To update other plugins, uninstall and reinstall them.":
+          "플러그인 업데이트는 자동으로 설치되지 않습니다. 버전이 다를 때 업데이트를 제공하는 플러그인은 목록에서 업데이트를 선택하고, 그 밖의 플러그인은 제거한 뒤 새 버전을 설치하세요.",
+      },
+      "reasonIncompatibleVersion": {
+        "{plugin} is incompatible with DSH {runtime} (requires {peers}); running it may cause crashes or data loss.":
+          "{plugin} 플러그인은 DSH {runtime} 버전과 호환되지 않습니다(필요: {peers}). 실행하면 비정상 종료나 데이터 손실이 생길 수 있습니다.",
+        "{plugin} is incompatible with DSH {runtime} (requires {requirements}); running it may cause crashes or data loss.":
+          "{plugin} 플러그인은 DSH {runtime} 버전과 호환되지 않습니다(필요: {requirements}). 실행하면 비정상 종료나 데이터 손실이 생길 수 있습니다.",
+      },
+      "restartNotice": {
+        "The change takes effect at the next start": "변경 사항은 다음에 시작할 때 적용됩니다",
+        "Restart DSH to apply the change. {reason}": "변경 사항을 적용하려면 DSH를 다시 시작하세요. {reason}",
+      },
+    },
+    "schedule.manager": {
+      "detail.records": {
+        "Delivery records": "전달 기록",
+        "Records": "기록",
+      },
+    },
+    "settings.agentPreset": {
+      "guideMinimalExplanation": {
+        "### What is included\n\nOne persistent shell tool and a fixed system prompt. The built-in preset does not load Skills, planning, context compaction, or the standard runtime context.\n\n### When to choose it\n\nUse it as a baseline for experiments and comparisons. It can still read files and execute scripts through shell commands, but offers fewer built-in ways to manage a long task. Fewer tools does not necessarily make it easier for a beginner.":
+          "### 포함된 것\n\n상태가 유지되는 셸 도구 하나와 고정된 시스템 프롬프트입니다. 이 기본 프리셋은 스킬, 계획, 컨텍스트 압축, 표준 런타임 컨텍스트를 불러오지 않습니다.\n\n### 언제 고를까\n\n실험과 비교의 기준선으로 쓰세요. 셸 명령으로 파일을 읽고 스크립트를 실행할 수는 있지만 긴 작업을 관리하는 기본 기능은 적습니다. 도구가 적다고 해서 처음 쓰는 사람에게 꼭 더 쉬운 것은 아닙니다.",
+        "### What is included\n\nOne persistent shell tool, read_image, and a fixed system prompt. Image reading requires an image-capable model. Older history is compacted automatically under context pressure; use /compact while the agent is idle to compact it manually. The built-in preset does not load Skills, planning, or the standard runtime context.\n\n### When to choose it\n\nUse it as a baseline for experiments and comparisons. It can still read files and execute scripts through shell commands, but offers fewer built-in ways to manage a long task. Fewer tools does not necessarily make it easier for a beginner.":
+          "### 포함된 것\n\n상태가 유지되는 셸 도구 하나, read_image 도구, 고정된 시스템 프롬프트입니다. 이미지를 읽으려면 이미지 입력을 지원하는 모델이 필요합니다. 컨텍스트가 부족해지면 이전 기록을 자동으로 압축합니다. 에이전트가 유휴 상태일 때 /compact를 입력하면 직접 압축할 수 있습니다. 이 기본 프리셋은 스킬, 계획, 표준 런타임 컨텍스트를 불러오지 않습니다.\n\n### 언제 고를까\n\n실험과 비교의 기준선으로 쓰세요. 셸 명령으로 파일을 읽고 스크립트를 실행할 수는 있지만 긴 작업을 관리하는 기본 기능은 적습니다. 도구가 적다고 해서 처음 쓰는 사람에게 꼭 더 쉬운 것은 아닙니다.",
+      },
+      "presetMinimalDescription": {
+        "The agent works using only a terminal tool. Useful for testing and comparing its basic performance.":
+          "에이전트가 터미널 도구 하나로만 작업합니다. 기본 성능을 시험하고 비교할 때 좋습니다.",
+        "The agent uses a terminal and image reading, with context compaction. Useful for testing and comparing its basic performance.":
+          "에이전트가 터미널과 이미지 읽기 도구를 쓰고 컨텍스트를 압축합니다. 기본 성능을 시험하고 비교할 때 좋습니다.",
+      },
+    },
+    "settings.models": {
+      "baseUrlDefault": {
+        "Provider default": "공급자 기본값",
+        "No default endpoint": "기본 엔드포인트 없음",
+      },
+      "deepSeekBaseUrl": {
+        "https://api.deepseek.com/anthropic": "https://api.deepseek.com/anthropic",
+        "https://api.deepseek.com/anthropic (Default to use DEEPSEEK_BASE_URL)":
+          "https://api.deepseek.com/anthropic (DEEPSEEK_BASE_URL을 기본으로 사용)",
+      },
+    },
+    "settings.webSearch": {
+      "baseUrl": {
+        "Endpoint": "엔드포인트",
+        "Messages API base URL": "Messages API 기본 URL",
+      },
+      "baseUrlHint": {
+        "Leave blank to use the provider default.": "공급자 기본값을 쓰려면 비워 두세요.",
+        "Include the API prefix, such as https://api.deepseek.com/anthropic/v1. The provider appends /messages. Leave blank to restore the default.":
+          "https://api.deepseek.com/anthropic/v1처럼 API 접두사를 포함해 입력하세요. 공급자가 뒤에 /messages를 붙입니다. 기본값으로 되돌리려면 비워 두세요.",
+      },
+      "maxUsesHint": {
+        "How many times one request may search before it must answer.":
+          "한 요청이 답하기 전까지 검색할 수 있는 횟수입니다.",
+        "How many searches the auxiliary model may run within one Messages request. Applies only to the Messages API.":
+          "보조 모델이 Messages 요청 하나에서 실행할 수 있는 검색 횟수입니다. Messages API에만 적용됩니다.",
+      },
+    },
+  }
   // Korean dictionaries for third-party plugin namespaces, keyed by the namespace
   // the plugin registers. The English source of each capture is in
   // source/plugins/*.json (scripts/capture-plugins.mjs). A namespace no installed
@@ -9859,8 +10083,41 @@
           () => ctx.locale.addLanguage({ id: "ko", label: "한국어", fallback: "en" }),
           "dsh-locale-ko: language",
         )
-        for (const [ns, dict] of Object.entries(dictionaries)) {
-          ctx.effect(() => ctx.locale.register(ns, "ko", dict), `dsh-locale-ko: ${ns}`)
+        // Core registers its English after plugins apply.
+        for (const ns of new Set([...Object.keys(dictionaries), ...Object.keys(variants)])) {
+          const base = dictionaries[ns] ?? {}
+          const known = variants[ns] ?? {}
+          ctx.effect(() => {
+            const english = ctx.locale.bind(ns)
+            let matched = {}
+            let dispose
+            let alive = true
+            let queued = false
+            const sync = () => {
+              queued = false
+              if (!alive) return
+              const next = { ...matched }
+              for (const [key, byEnglish] of Object.entries(known)) {
+                const text = english(key)
+                if (!(key in next) && Object.hasOwn(byEnglish, text)) next[key] = byEnglish[text]
+              }
+              if (dispose !== undefined && Object.keys(next).length === Object.keys(matched).length) return
+              matched = next
+              dispose?.()
+              dispose = ctx.locale.register(ns, "ko", { ...base, ...matched })
+            }
+            const unsubscribe = ctx.locale.subscribe(() => {
+              if (queued) return
+              queued = true
+              queueMicrotask(sync)
+            })
+            sync()
+            return () => {
+              alive = false
+              unsubscribe()
+              dispose?.()
+            }
+          }, `dsh-locale-ko: ${ns}`)
         }
         // A third-party plugin may ship its own Korean, and dsh rejects a second
         // registration for the same namespace and locale. Wait until the owner

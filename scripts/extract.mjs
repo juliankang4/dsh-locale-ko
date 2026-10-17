@@ -9,7 +9,8 @@
  * are unpacked once under .cache/<tag> (never deleted by this script). Several
  * tags union into one table: a later tag wins where it has the key, and a
  * namespace or key only an earlier tag has stays, so translations survive on a
- * release that still shows them.
+ * release that still shows them. source/en-variants.json lists every distinct
+ * English text of each key whose English differs between the tags.
  */
 import { execFileSync, spawnSync } from 'node:child_process'
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, renameSync, writeFileSync } from 'node:fs'
@@ -354,12 +355,18 @@ async function extractTag(tag) {
 }
 
 const merged = { en: new Map(), zh: new Map() }
+const texts = new Map()
 for (const tag of tags) {
   const tables = await extractTag(tag)
   for (const [locale, table] of Object.entries(tables)) {
     for (const [namespace, keys] of table) {
       const target = merged[locale].get(namespace) ?? new Map()
-      for (const [key, value] of keys) target.set(key, value)
+      for (const [key, value] of keys) {
+        target.set(key, value)
+        if (locale !== 'en') continue
+        const list = texts.get(`${namespace}\0${key}`) ?? []
+        if (!list.includes(value)) texts.set(`${namespace}\0${key}`, [...list, value])
+      }
       merged[locale].set(namespace, target)
     }
   }
@@ -375,6 +382,13 @@ const sorted = (table) =>
   )
 
 mkdirSync(sourceDir, { recursive: true })
+const variants = new Map()
+for (const [id, list] of texts) {
+  if (list.length < 2) continue
+  const [namespace, key] = id.split('\0')
+  variants.set(namespace, (variants.get(namespace) ?? new Map()).set(key, list))
+}
+writeFileSync(join(sourceDir, 'en-variants.json'), `${JSON.stringify(sorted(variants), null, 2)}\n`)
 for (const [locale, table] of Object.entries(merged)) {
   const data = sorted(table)
   const keys = Object.values(data).reduce((total, dict) => total + Object.keys(dict).length, 0)

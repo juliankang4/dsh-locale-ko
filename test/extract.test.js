@@ -44,6 +44,7 @@ const fixture = (t) => {
     checkout,
     runner,
     english: () => JSON.parse(readFileSync(join(runner, 'source/en.json'), 'utf8')).demo,
+    variants: () => JSON.parse(readFileSync(join(runner, 'source/en-variants.json'), 'utf8')).demo ?? {},
     commit(tag, text) {
       writeFileSync(file, text)
       git('add', '-A')
@@ -79,6 +80,11 @@ test('a later tag wins for a changed value and an earlier-only key stays', (t) =
   assert.equal(fx.english().shared, 'Second text', 'the later tag wins a changed value')
   assert.equal(fx.english()['older-only'], 'Older only', 'a key only the earlier tag has stays')
   assert.equal(fx.english().newer, 'Newer only', 'the later tag adds its own key')
+  assert.deepEqual(
+    fx.variants(),
+    { shared: ['First text', 'Second text'] },
+    'only a changed key lists its English texts',
+  )
 })
 
 test('a failing tag leaves the previous output untouched', (t) => {

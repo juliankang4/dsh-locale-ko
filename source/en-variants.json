@@ -1,0 +1,70 @@
+{
+  "conversation": {
+    "tool.preparing.content": [
+      "Preparing content {kilobytes}KB",
+      "{kilobytes}KB"
+    ]
+  },
+  "pluginManager": {
+    "bundlesTitle": [
+      "Installed",
+      "Installed plugins"
+    ],
+    "installDoneRestart": [
+      "Installed; it loads at the next start.",
+      "Installed; restart DSH to load it. {reason}"
+    ],
+    "installUpgradeNotice": [
+      "Installed plugins do not update automatically yet. To upgrade a plugin, uninstall it and install the new version. Later releases will keep improving the upgrade experience.",
+      "On-demand Official plugins offer Update when their version differs from DSH. To update other plugins, uninstall and reinstall them."
+    ],
+    "reasonIncompatibleVersion": [
+      "{plugin} is incompatible with DSH {runtime} (requires {peers}); running it may cause crashes or data loss.",
+      "{plugin} is incompatible with DSH {runtime} (requires {requirements}); running it may cause crashes or data loss."
+    ],
+    "restartNotice": [
+      "The change takes effect at the next start",
+      "Restart DSH to apply the change. {reason}"
+    ]
+  },
+  "schedule.manager": {
+    "detail.records": [
+      "Delivery records",
+      "Records"
+    ]
+  },
+  "settings.agentPreset": {
+    "guideMinimalExplanation": [
+      "### What is included\n\nOne persistent shell tool and a fixed system prompt. The built-in preset does not load Skills, planning, context compaction, or the standard runtime context.\n\n### When to choose it\n\nUse it as a baseline for experiments and comparisons. It can still read files and execute scripts through shell commands, but offers fewer built-in ways to manage a long task. Fewer tools does not necessarily make it easier for a beginner.",
+      "### What is included\n\nOne persistent shell tool, read_image, and a fixed system prompt. Image reading requires an image-capable model. Older history is compacted automatically under context pressure; use /compact while the agent is idle to compact it manually. The built-in preset does not load Skills, planning, or the standard runtime context.\n\n### When to choose it\n\nUse it as a baseline for experiments and comparisons. It can still read files and execute scripts through shell commands, but offers fewer built-in ways to manage a long task. Fewer tools does not necessarily make it easier for a beginner."
+    ],
+    "presetMinimalDescription": [
+      "The agent works using only a terminal tool. Useful for testing and comparing its basic performance.",
+      "The agent uses a terminal and image reading, with context compaction. Useful for testing and comparing its basic performance."
+    ]
+  },
+  "settings.models": {
+    "baseUrlDefault": [
+      "Provider default",
+      "No default endpoint"
+    ],
+    "deepSeekBaseUrl": [
+      "https://api.deepseek.com/anthropic",
+      "https://api.deepseek.com/anthropic (Default to use DEEPSEEK_BASE_URL)"
+    ]
+  },
+  "settings.webSearch": {
+    "baseUrl": [
+      "Endpoint",
+      "Messages API base URL"
+    ],
+    "baseUrlHint": [
+      "Leave blank to use the provider default.",
+      "Include the API prefix, such as https://api.deepseek.com/anthropic/v1. The provider appends /messages. Leave blank to restore the default."
+    ],
+    "maxUsesHint": [
+      "How many times one request may search before it must answer.",
+      "How many searches the auxiliary model may run within one Messages request. Applies only to the Messages API."
+    ]
+  }
+}

@@ -3,6 +3,7 @@ import { readFileSync, readdirSync } from 'node:fs'
 import test from 'node:test'
 
 const english = JSON.parse(readFileSync(new URL('../source/en.json', import.meta.url), 'utf8'))
+const variants = JSON.parse(readFileSync(new URL('../source/en-variants.json', import.meta.url), 'utf8'))
 const client = readFileSync(new URL('../client.js', import.meta.url), 'utf8')
 
 /** English dictionary of every captured third-party plugin namespace. */
@@ -29,33 +30,80 @@ globalThis.window = {
 }
 await import('../client.js')
 
+const tick = () => new Promise((resolve) => setImmediate(resolve))
+
 /**
- * Run the client's apply once against a locale service fake. `owners` is what
- * installed plugins have registered: a namespace's English dictionary and the
- * locales it occupies. Returns the registrations our client made.
+ * A locale service that behaves like dsh's: lookup prefers Korean over English,
+ * subscribers run synchronously inside register and unregister, and a second
+ * registration of one namespace and locale throws.
  */
-function applyClient(owners = new Map()) {
-  const registered = []
-  let subscribed = () => {}
-  registration.factory().apply({
-    effect: (callback) => callback(),
-    locale: {
-      addLanguage: () => () => {},
-      bind: (namespace) => (key) => owners.get(namespace)?.en?.[key] ?? key,
-      subscribe: (callback) => {
-        subscribed = callback
-        return () => {}
-      },
-      register: (namespace, locale, dict) => {
-        if (owners.get(namespace)?.locales.has(locale)) {
-          throw new Error(`locale namespace "${namespace}" already has locale "${locale}"`)
-        }
-        registered.push([namespace, locale, dict])
-        return () => {}
-      },
+function localeService() {
+  const dicts = new Map()
+  const listeners = new Set()
+  const publish = () => {
+    for (const callback of [...listeners]) callback()
+  }
+  return {
+    korean: (namespace) => dicts.get(namespace)?.get('ko'),
+    addLanguage: () => () => {},
+    bind:
+      (namespace) =>
+      (key, params = {}) =>
+        (dicts.get(namespace)?.get('ko')?.[key] ?? dicts.get(namespace)?.get('en')?.[key] ?? key).replace(
+          /\{(\w+)\}/g,
+          (match, name) => params[name] ?? match,
+        ),
+    subscribe: (callback) => {
+      listeners.add(callback)
+      return () => listeners.delete(callback)
     },
-  })
-  return { registered, notify: () => subscribed() }
+    register: (namespace, locale, dict) => {
+      const locales = dicts.get(namespace) ?? new Map()
+      dicts.set(namespace, locales)
+      if (locales.has(locale)) throw new Error(`locale namespace "${namespace}" already has locale "${locale}"`)
+      locales.set(locale, dict)
+      publish()
+      return () => {
+        if (locales.get(locale) !== dict) return
+        locales.delete(locale)
+        publish()
+      }
+    },
+  }
+}
+
+function applyClient(owners = new Map(), core = {}) {
+  const service = localeService()
+  const registered = []
+  const disposers = []
+  const register = (namespace, en, locales = new Set(['en'])) => {
+    for (const locale of locales) service.register(namespace, locale, locale === 'en' ? en : {})
+  }
+  for (const [namespace, { en, locales }] of owners) register(namespace, en, locales)
+  for (const [namespace, en] of Object.entries(core)) register(namespace, en)
+  const apply = () =>
+    registration.factory().apply({
+      effect: (callback) => disposers.push(callback()),
+      locale: {
+        ...service,
+        register: (namespace, locale, dict) => {
+          const dispose = service.register(namespace, locale, dict)
+          registered.push([namespace, locale, dict])
+          return dispose
+        },
+      },
+    })
+  apply()
+  return {
+    registered,
+    service,
+    apply,
+    register,
+    own: (namespace, owner) => register(namespace, owner.en, owner.locales),
+    dispose: () => {
+      for (const dispose of disposers.splice(0)) dispose()
+    },
+  }
 }
 
 /** Every captured namespace as an installed plugin that registers English and Chinese. */
@@ -82,17 +130,69 @@ const check = (namespace, dict, source) => {
   return translated
 }
 
-test('Korean values agree with the English source', (t) => {
+test('Korean values agree with the English source', async (t) => {
+  const { service } = applyClient(new Map(), english)
+  await tick()
   let translated = 0
-  for (const [namespace, locale, dict] of dictionaries) {
+  for (const namespace of Object.keys(english)) {
+    translated += check(namespace, service.korean(namespace) ?? {}, english[namespace])
+  }
+  for (const [namespace, locale] of dictionaries) {
     assert.equal(locale, 'ko')
-    if (pluginEnglish.has(namespace)) continue
-    assert.ok(Object.hasOwn(english, namespace), `unknown namespace ${namespace}`)
-    translated += check(namespace, dict, english[namespace])
+    assert.ok(pluginEnglish.has(namespace) || Object.hasOwn(english, namespace), `unknown namespace ${namespace}`)
   }
 
   const total = Object.values(english).reduce((count, dict) => count + Object.keys(dict).length, 0)
-  t.diagnostic(`translated ${translated}/${total} keys across ${dictionaries.length} namespaces`)
+  t.diagnostic(`translated ${translated}/${total} keys across ${Object.keys(english).length} namespaces`)
+})
+
+test('a key with several English texts gets the Korean of the English the running dsh registered', async () => {
+  let count = 0
+  for (const [namespace, keys] of Object.entries(variants)) {
+    for (const [key, texts] of Object.entries(keys)) {
+      for (const text of texts) {
+        const { service, register } = applyClient()
+        assert.equal(
+          service.korean(namespace)?.[key],
+          undefined,
+          `${namespace}.${key} has Korean before core registers`,
+        )
+        register(namespace, { [key]: text })
+        await tick()
+        const korean = service.korean(namespace)?.[key]
+        assert.equal(typeof korean, 'string', `${namespace}.${key} has no Korean for: ${text}`)
+        assert.deepEqual(placeholders(korean), placeholders(text), `placeholder mismatch in ${namespace}.${key}`)
+        count += 1
+      }
+      const unknown = applyClient(new Map(), { [namespace]: { [key]: `${texts[0]} (a newer release)` } })
+      await tick()
+      assert.equal(unknown.service.korean(namespace)?.[key], undefined, `${namespace}.${key} must stay English`)
+    }
+  }
+  assert.ok(count > 0)
+})
+
+test('Korean appears when core English registers late and follows disable and enable', async () => {
+  const [namespace, [key, [first, second]]] = Object.entries(variants).map(([name, keys]) => [
+    name,
+    Object.entries(keys)[0],
+  ])[0]
+  const { service, register, apply, dispose, registered } = applyClient()
+  register(namespace, { [key]: second })
+  await tick()
+  const korean = service.korean(namespace)[key]
+  assert.notEqual(korean, undefined)
+  assert.notEqual(first, second)
+
+  dispose()
+  assert.equal(service.korean(namespace), undefined, 'disable removes every dictionary')
+  const count = registered.length
+  await tick()
+  assert.equal(registered.length, count, 'a queued update after disable registers nothing')
+
+  apply()
+  await tick()
+  assert.equal(service.korean(namespace)[key], korean, 're-enable translates again without a second-registration error')
 })
 
 test('Korean values agree with the captured third-party dictionaries', (t) => {
@@ -101,10 +201,6 @@ test('Korean values agree with the captured third-party dictionaries', (t) => {
     assert.equal(locale, 'ko')
     if (!pluginEnglish.has(namespace)) continue
     translated += check(namespace, dict, pluginEnglish.get(namespace))
-  }
-  // A namespace the client translates but no capture declares would be stale.
-  for (const [namespace] of dictionaries) {
-    assert.ok(pluginEnglish.has(namespace) || Object.hasOwn(english, namespace), `unknown namespace ${namespace}`)
   }
 
   const total = [...pluginEnglish.values()].reduce((count, dict) => count + Object.keys(dict).length, 0)
@@ -116,28 +212,22 @@ test('Korean values agree with the captured third-party dictionaries', (t) => {
 
 test('third-party dictionaries attach only after their owner registers', { skip: untranslated }, async () => {
   for (const namespace of translated) {
-    const owners = new Map()
-    const { registered, notify } = applyClient(owners)
+    const harness = applyClient()
     assert.deepEqual(
-      registered.filter(([name]) => name === namespace),
+      harness.registered.filter(([name]) => name === namespace),
       [],
       `nothing attaches before any owner registers (${namespace})`,
     )
-    owners.set(namespace, { en: pluginEnglish.get(namespace), locales: new Set(['en', 'zh']) })
-    notify()
-    await new Promise((resolve) => setImmediate(resolve))
+    harness.own(namespace, { en: pluginEnglish.get(namespace), locales: new Set(['en', 'zh']) })
+    await tick()
     assert.deepEqual(
-      registered.filter(([name]) => name === namespace).map(([name, locale]) => [name, locale]),
+      harness.registered.filter(([name]) => name === namespace).map(([name, locale]) => [name, locale]),
       [[namespace, 'ko']],
     )
   }
 
-  const owners = new Map(
-    translated.map((namespace) => [namespace, { en: pluginEnglish.get(namespace), locales: new Set(['en', 'zh']) }]),
-  )
-  const { registered, notify } = applyClient(owners)
-  notify()
-  await new Promise((resolve) => setImmediate(resolve))
+  const { registered } = applyClient(installed)
+  await tick()
   const attached = registered.map(([name]) => name).filter((name) => pluginEnglish.has(name))
   assert.deepEqual(
     attached.sort(),
@@ -146,17 +236,7 @@ test('third-party dictionaries attach only after their owner registers', { skip:
   )
 })
 
-test('an owner that ships Korean keeps its own', { skip: untranslated }, () => {
-  for (const namespace of translated) {
-    const owners = new Map([[namespace, { en: pluginEnglish.get(namespace), locales: new Set(['en', 'zh', 'ko']) }]])
-    const { registered } = applyClient(owners)
-    assert.deepEqual(
-      registered.filter(([name]) => name === namespace),
-      [],
-      `${namespace} keeps its own Korean`,
-    )
-  }
-
+test('an owner that ships Korean keeps its own', { skip: untranslated }, async () => {
   const owners = new Map(
     translated.map((namespace) => [
       namespace,
@@ -164,10 +244,11 @@ test('an owner that ships Korean keeps its own', { skip: untranslated }, () => {
     ]),
   )
   const { registered } = applyClient(owners)
+  await tick()
   assert.deepEqual(
     registered.filter(([name]) => pluginEnglish.has(name)),
     [],
-    'no translated namespace is registered when every owner ships Korean',
+    'no translated namespace is registered when its owner ships Korean',
   )
 })
 

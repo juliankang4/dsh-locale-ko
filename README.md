@@ -2,7 +2,7 @@
 
 DeepSeek Harness(dsh)의 웹 화면과 데스크톱 앱을 한국어로 바꾸는 언어팩(language pack) 플러그인입니다. 설치하면 설정의 언어 목록에 '한국어'가 추가됩니다. 메뉴와 버튼, 안내 문구, 오류 메시지가 한국어로 표시됩니다.
 
-웹 화면은 dsh 0.2.1-alpha.2, 데스크톱 앱은 dsh 0.2.0-rc.2에서 확인했습니다.
+웹 화면과 데스크톱 앱은 dsh 0.2.1-rc.2에서 확인했습니다. dsh 0.2.0-rc.2에서도 웹 화면을 확인했습니다.
 
 ## 설치
 
@@ -54,7 +54,7 @@ dsh에 들어 있는 실험 기능(에이전트 팀, 음성 입력, 추론 번�
 - @linxin666/dsh-remote-web-ui (0.4.5)
 - @linxin666/dsh-ssh (0.4.5)
 - @michengai/dsh-archive-manager (1.0.11)
-- @michengai/dsh-codex-ui (1.1.33): 이 플러그인은 dsh 0.2.0-rc.2에서 쓸 수 있고 0.2.1-alpha.2는 지원하지 않습니다.
+- @michengai/dsh-codex-ui (1.1.33): 이 플러그인은 dsh 0.2.0-rc.2에서 쓸 수 있고 0.2.1-rc.2는 지원하지 않습니다.
 - @michengai/dsh-skills-manager (1.1.9)
 - @nanmicoder/dsh-agent-teams (0.1.22)
 - @xmanrui/dsh-im (4.35.1)
@@ -87,10 +87,10 @@ Node.js 24를 사용합니다. `npm ci`로 개발 도구를 설치한 뒤 `npm r
 번역할 원문은 dsh 소스에서 뽑아 `source/en.json`에 저장합니다. 영어 원문이 기준이고 `source/zh.json`은 참고용입니다. 태그를 모두 받은 dsh 저장소 clone을 준비하고 아래 명령을 실행합니다.
 
 ```sh
-node scripts/extract.mjs <dsh-checkout> dsh-v0.2.0-rc.2 dsh-v0.2.1-alpha.2
+node scripts/extract.mjs <dsh-checkout> dsh-v0.2.0-rc.2 dsh-v0.2.1-rc.2
 ```
 
-태그를 여러 개 주면 결과를 하나로 합칩니다. 같은 키는 뒤에 적은 태그의 문구를 쓰고 앞 태그에만 있는 키도 그대로 남깁니다. 그래서 데스크톱 앱에 들어 있는 dsh 0.2.0-rc.2와 npm의 dsh 0.2.1-alpha.2를 한 언어팩으로 함께 번역할 수 있습니다. 태그별 소스는 `.cache/<태그>`에 풀어 두고 다음 실행에서 다시 씁니다.
+태그를 여러 개 주면 결과를 하나로 합칩니다. 같은 키는 뒤에 적은 태그의 문구를 쓰고 앞 태그에만 있는 키도 그대로 남깁니다. 그래서 dsh 0.2.0-rc.2와 0.2.1-rc.2를 한 언어팩으로 함께 번역할 수 있습니다. 태그마다 영어 문구가 다른 키는 `source/en-variants.json`에 영어 문구별로 모두 나열합니다. `client.js`의 `variants`에는 이 영어 문구마다 한국어를 하나씩 넣습니다. 실행 중인 dsh가 등록한 영어와 일치하는 한국어만 표시하고, 일치하는 것이 없으면 영어로 둡니다. 지원하는 태그끼리 영어가 같은 키는 이렇게 비교하지 않으므로, 이후 dsh 버전에서 그 영어가 바뀌면 언어팩을 갱신할 때까지 이전 한국어가 나옵니다. 태그별 소스는 `.cache/<태그>`에 풀어 두고 다음 실행에서 다시 씁니다.
 
 PR과 `main` push에서 같은 검사와 테스트 명령을 실행합니다. 요약 검사 `CI passed`는 두 job이 모두 성공해야 통과합니다. 실패, 취소와 건너뛰기는 모두 실패로 처리합니다.
 

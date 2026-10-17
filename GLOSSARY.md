@@ -37,12 +37,15 @@ Terms used across the dsh Web UI and the Korean rendering this pack uses. Pick t
 | background job, job | 백그라운드 작업, 작업 | |
 | tool, tool call | 도구, 도구 호출 | |
 | plugin | 플러그인 | |
+| plugin market | 플러그인 마켓 | The Discover tab of the Plugins page, after 설치됨 (Installed). A market index is 인덱스, and an index source (index URL) is 인덱스 소스. |
+| Discover (tab) | 찾아보기 | The plugin market tab and its back link; the Installed tab is 설치됨. |
 | model, provider | 모델, 공급자 | "model provider" is 모델 공급자. |
 | token | 토큰 | "tok" stays as the unit. |
 | context, context window | 컨텍스트, 컨텍스트 창 | |
 | compact, compaction | 압축, 컨텍스트 압축 | |
 | prompt, system prompt | 프롬프트, 시스템 프롬프트 | |
 | reasoning, reasoning effort | 추론, 추론 강도 | |
+| reasoning level | 추론 강도 단계 | A named level with an API value for one model; 추론 강도 alone is the effort picker. |
 | trajectory | 실행 기록 | The view of every model request and tool call in a session. |
 | session log | 세션 로그 | |
 | permission, approval | 권한, 승인 | |
@@ -75,6 +78,7 @@ Terms used across the dsh Web UI and the Korean rendering this pack uses. Pick t
 | overridden | 변경됨 | A setting that differs from its default. |
 | base URL, endpoint | 기본 URL, 엔드포인트 | |
 | credential | 자격 증명 | |
+| secret | 비밀 값 | A masked credential in a field or row; its controls are 비밀 값 표시 and 비밀 값 가리기. |
 | component (of a plugin) | 구성 요소 | |
 | bundle, profile | 번들, 프로필 | |
 | Auto review | 자동 검토 | Permission mode with model review before each call. |

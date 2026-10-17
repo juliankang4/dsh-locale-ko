@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Korean for the 144 new and 10 changed strings in dsh 0.2.1-rc.2, including the plugin market, reasoning levels, provider credentials and the service-version notice.
+- Strings that only dsh 0.2.0-rc.2 shows keep their Korean, so one pack covers both versions.
+- A text whose English differs between supported dsh releases is translated by the English the running dsh registered; an unknown wording stays English.
+
 ## 0.1.2
 
 - Add `npm run check` for formatting, lint and language checks.
