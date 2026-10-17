@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.3
 
 - Korean for the 144 new and 10 changed strings in dsh 0.2.1-rc.2, including the plugin market, reasoning levels, provider credentials and the service-version notice.
 - Strings that only dsh 0.2.0-rc.2 shows keep their Korean, so one pack covers both versions.
